@@ -16,12 +16,12 @@
 
 package br.com.zup.beagle.expression
 
-import android.content.Context
 import br.com.zup.beagle.BaseTest
 import br.com.zup.beagle.expression.cache.CacheProvider
 import br.com.zup.beagle.expression.config.BindingSetup
 import br.com.zup.beagle.testutil.CoroutineTestRule
-import br.com.zup.beagle.widget.core.WidgetView
+import br.com.zup.beagle.widget.layout.Container
+import br.com.zup.beagle.widget.navigation.Touchable
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
@@ -37,21 +37,28 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import kotlin.Array
 import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
-class ModelValueBindingAdapterTest : BaseTest(){
+class ModelValueBindingAdapterTest : BaseTest() {
+    private var currentText = ""
+
     @InjectMockKs
     private lateinit var modelValueBindingAdapter: ModelValueBindingAdapter
 
     @RelaxedMockK
     private lateinit var value: Value
 
-    private val dataBindingComponent: WidgetView = WidgetBindingSampleTest(
-        intValue = BindingExpr(expression = "@{b}"),
-        stringValue = BindingExpr("@{a}")
+    private val dataBindingComponent: WidgetBindingSampleTest = WidgetBindingSampleTest(
+        intValue = BindingExpr(expression = "@{b}", initialValue = 0),
+        stringValue = BindingExpr("@{a}", initialValue = "loading...")
     )
+
+    @RelaxedMockK
+    private lateinit var container: Container
+
+    @RelaxedMockK
+    private lateinit var touchable: Touchable
 
     private val modelJson = """
         {
@@ -59,10 +66,6 @@ class ModelValueBindingAdapterTest : BaseTest(){
   "b" : 2
 }
 """
-    @RelaxedMockK
-    private lateinit var context: Context
-
-    private val modelPath = "/modelPath"
 
     @get:Rule
     val scope = CoroutineTestRule()
@@ -80,6 +83,19 @@ class ModelValueBindingAdapterTest : BaseTest(){
         mockkObject(BindingSetup)
         every { BindingSetup.bindingConfig } returns bindingConfig
         BindingSetup.bindingConfig = BindingSetup.bindingConfig
+        every { container.children } returns listOf(touchable)
+        every { touchable.child } returns dataBindingComponent
+        dataBindingComponent.modelJson = modelJson
+        dataBindingComponent.apply {
+            intValue.observes { value ->
+                currentText = formatString(currentText, valorInt = value)
+            }
+
+            stringValue.observes { value ->
+                currentText = formatString(currentText, nome = value)
+            }
+        }
+        currentText = ""
     }
 
     @After
@@ -91,15 +107,44 @@ class ModelValueBindingAdapterTest : BaseTest(){
 
     @Test
     fun should_evaluateBinding_with_value_for_success() {
-        dataBindingComponent.modelJson = modelJson
-        val view = dataBindingComponent.toView(context)
-        modelValueBindingAdapter.evaluateBinding(dataBindingComponent)
+        every { container.modelJson } returns modelJson
+        modelValueBindingAdapter.evaluateBinding(container)
 
-        assertEquals("2 - Beagle 2", (view as WidgetBindingSampleTextView).currentText)
+        assertEquals("2 - Beagle 2", currentText)
     }
 
-    @Suppress("UNCHECKED_CAST")
-    private inline fun <reified T> toTypedKotlinArray(list: List<*>): Array<T> {
-        return (list as List<T>).toTypedArray()
+    @Test
+    fun should_evaluateInitialValue_with_value_for_success() {
+        dataBindingComponent.modelJson = modelJson
+        modelValueBindingAdapter.evaluateInitialValue(dataBindingComponent)
+
+        assertEquals("0 - loading...", currentText)
+    }
+
+    private fun formatString(
+        currentValue: CharSequence, valorInt: Int = -1,
+        nome: String = ""
+    ): String {
+        var valorIntOld = ""
+        var nomeOld = ""
+        if (currentValue.isEmpty()) {
+            return "$valorInt - $nome"
+        }
+        if (valorInt != -1 || nome.isNotEmpty()) {
+            val values = currentValue.split(" - ")
+            valorIntOld = values.first()
+            nomeOld = values.last()
+
+            if (valorInt != -1) {
+                valorIntOld = valorInt.toString()
+            }
+
+            if (nome.isNotEmpty()) {
+                nomeOld = nome
+            }
+
+        }
+
+        return "$valorIntOld - $nomeOld"
     }
 }
