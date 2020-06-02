@@ -1,9 +1,5 @@
 ▿ PageView
-  ▿ pageIndicator: Optional<PageIndicatorComponent>
-    ▿ some: PageIndicator
-      - selectedColor: Optional<String>.none
-      - unselectedColor: Optional<String>.none
-  ▿ pages: 3 elements
+  ▿ children: 3 elements
     ▿ Container
       ▿ children: 3 elements
         ▿ Text
@@ -178,3 +174,7 @@
             - shrink: Optional<Double>.none
             - size: Optional<Size>.none
         - id: Optional<String>.none
+  ▿ pageIndicator: Optional<PageIndicatorComponent>
+    ▿ some: PageIndicator
+      - selectedColor: Optional<String>.none
+      - unselectedColor: Optional<String>.none

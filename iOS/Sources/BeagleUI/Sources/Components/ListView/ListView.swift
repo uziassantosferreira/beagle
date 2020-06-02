@@ -20,15 +20,15 @@ public struct ListView: ServerDrivenComponent, AutoInitiableAndDecodable {
     
     // MARK: - Public Properties
     
-    public let rows: [ServerDrivenComponent]
+    public let children: [ServerDrivenComponent]
     public var direction: Direction = .vertical
 
 // sourcery:inline:auto:ListView.Init
     public init(
-        rows: [ServerDrivenComponent],
+        children: [ServerDrivenComponent],
         direction: Direction = .vertical
     ) {
-        self.rows = rows
+        self.children = children
         self.direction = direction
     }
 // sourcery:end
@@ -54,7 +54,7 @@ extension ListView {
 
 extension ListView: Renderable {
     public func toView(context: BeagleContext, dependencies: RenderableDependencies) -> UIView {
-        let componentViews: [(view: UIView, size: CGSize)] = rows.compactMap {
+        let componentViews: [(view: UIView, size: CGSize)] = children.compactMap {
             let container = Container(children: [$0], widgetProperties: .init(flex: Flex(positionType: .absolute)))
             let containerView = container.toView(context: context, dependencies: dependencies)
             let view = UIView()

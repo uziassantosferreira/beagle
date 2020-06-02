@@ -20,31 +20,31 @@ public struct TabItem: AutoInitiableAndDecodable {
 
     public let icon: String?
     public let title: String?
-    public let content: ServerDrivenComponent
+    public let child: ServerDrivenComponent
 
 // sourcery:inline:auto:TabItem.Init
     public init(
         icon: String? = nil,
         title: String? = nil,
-        content: ServerDrivenComponent
+        child: ServerDrivenComponent
     ) {
         self.icon = icon
         self.title = title
-        self.content = content
+        self.child = child
     }
 // sourcery:end
 }
 
 public struct TabView: ServerDrivenComponent, AutoInitiable {
-    public let tabItems: [TabItem]
+    public let children: [TabItem]
     public let style: String?
 
 // sourcery:inline:auto:TabView.Init
     public init(
-        tabItems: [TabItem],
+        children: [TabItem],
         style: String? = nil
     ) {
-        self.tabItems = tabItems
+        self.children = children
         self.style = style
     }
 // sourcery:end
@@ -52,7 +52,7 @@ public struct TabView: ServerDrivenComponent, AutoInitiable {
 
 extension TabView: Renderable {
     public func toView(context: BeagleContext, dependencies: RenderableDependencies) -> UIView {
-        let model = TabViewUIComponent.Model(tabIndex: 0, tabViewItems: tabItems)
+        let model = TabViewUIComponent.Model(tabIndex: 0, tabViewItems: children)
         let tabView = TabViewUIComponent(model: model)
         if let style = style {
             dependencies.theme.applyStyle(for: tabView as UIView, withId: style)

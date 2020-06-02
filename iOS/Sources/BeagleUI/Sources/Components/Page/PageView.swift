@@ -18,15 +18,15 @@ import UIKit
 
 public struct PageView: ServerDrivenComponent, AutoInitiable {
 
-    public let pages: [ServerDrivenComponent]
+    public let children: [ServerDrivenComponent]
     public let pageIndicator: PageIndicatorComponent?
 
 // sourcery:inline:auto:PageView.Init
     public init(
-        pages: [ServerDrivenComponent],
+        children: [ServerDrivenComponent],
         pageIndicator: PageIndicatorComponent? = nil
     ) {
-        self.pages = pages
+        self.children = children
         self.pageIndicator = pageIndicator
     }
 // sourcery:end
@@ -34,7 +34,7 @@ public struct PageView: ServerDrivenComponent, AutoInitiable {
 
 extension PageView: Renderable {
     public func toView(context: BeagleContext, dependencies: RenderableDependencies) -> UIView {
-        let pagesControllers = pages.map {
+        let pagesControllers = children.map {
             BeagleScreenViewController(
                 viewModel: .init(screenType: .declarative($0.toScreen()))
             )
@@ -57,13 +57,13 @@ extension PageView: Renderable {
 
 extension PageView: Decodable {
     enum CodingKeys: String, CodingKey {
-        case pages
+        case children
         case pageIndicator
     }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.pages = try container.decode(forKey: .pages)
+        self.children = try container.decode(forKey: .children)
         let pageIndicator = try container.decodeIfPresent(AnyDecodableContainer.self, forKey: .pageIndicator)
         self.pageIndicator = (pageIndicator?.content as? PageIndicatorComponent)
     }
