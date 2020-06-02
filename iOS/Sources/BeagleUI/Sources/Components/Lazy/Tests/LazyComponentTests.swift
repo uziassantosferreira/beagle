@@ -32,40 +32,53 @@ final class LazyComponentTests: XCTestCase {
         XCTAssert(sut.initialState is Text)
     }
     
-    func test_toView_shouldReturnTheExpectedView() {
-        // Given
-        let lazyComponent = LazyComponent(path: "path", initialState: ComponentDummy())
-        let context = BeagleContextSpy()
-        
-        // When
-        _ = lazyComponent.toView(context: context, dependencies: BeagleScreenDependencies())
-        
-        // Then
-        XCTAssertTrue(context.didCallLazyLoad)
-    }
-    
-    func test_loadUnknowComponent_shouldRenderTheError() {
-        let lazyComponent = LazyComponent(path: "unknow-widget", initialState: Text("Loading..."))
-        let size = CGSize(width: 300, height: 75)
+    func test_lazyLoad_shouldReplaceTheInitialContent() {
+        let sut = LazyComponent(path: "", initialState: Text("Loading..."))
         let repository = LazyRepositoryStub()
         let dependecies = BeagleDependencies()
         dependecies.repository = repository
         
-        let screen = BeagleScreenViewController(
-            viewModel: .init(
-                screenType: .declarative(lazyComponent.toScreen()),
-                dependencies: dependecies
-            )
+        let screenController = BeagleScreenViewController(viewModel: .init(
+            screenType: .declarative(Screen(child: sut)),
+            dependencies: dependecies)
         )
         
-        assertSnapshotImage(screen, size: size)
-        repository.componentCompletion?(.success(UnknownComponent(type: "LazyError")))
-        assertSnapshotImage(screen, size: size)
+        let size = CGSize(width: 100, height: 25)
+        assertSnapshotImage(screenController, size: size)
+        
+        repository.componentCompletion?(.success(Text("Lazy Loaded")))
+        assertSnapshotImage(screenController, size: size)
+    }
+
+    func test_lazyLoad_withUpdatableView_shouldCallUpdate() {
+        let sut = LazyComponent(path: "", initialState: OnStateUpdatableComponent())
+        let repository = LazyRepositoryStub()
+        let context = BeagleContextStub()
+        context.dependencies = BeagleScreenDependencies(repository: repository)
+        
+        let view = sut.toView(context: context, dependencies: context.dependencies)
+        repository.componentCompletion?(.success(ComponentDummy()))
+        
+        XCTAssertTrue((view as? OnStateUpdatableViewSpy)?.didCallOnUpdateState ?? false)
     }
     
-    func test_whenDecodingJson_thenItShouldReturnALazyComponent() throws {
-        let component: LazyComponent = try componentFromJsonFile(fileName: "lazyComponent")
-        assertSnapshot(matching: component, as: .dump)
+    func test_whenLoadFail_shouldSetNotifyTheScreen() {
+        let sut = LazyComponent(path: "", initialState: ComponentDummy())
+        let repository = LazyRepositoryStub()
+        let context = BeagleContextStub()
+        context.dependencies = BeagleScreenDependencies(repository: repository)
+        
+        _ = sut.toView(context: context, dependencies: context.dependencies)
+        repository.componentCompletion?(.failure(.urlBuilderError))
+        
+        switch context.screenState {
+        case .failure(let error):
+            switch error {
+            case .lazyLoad: break
+            default: XCTFail("Expected .lazyLoad error but found \(error)")
+            }
+        default: XCTFail("Expected state .failure but found \(context.screenState)")
+        }
     }
 }
 
@@ -88,5 +101,20 @@ class LazyRepositoryStub: Repository {
     func fetchImage(url: String, additionalData: RemoteScreenAdditionalData?, completion: @escaping (Result<Data, Request.Error>) -> Void) -> RequestToken? {
         imageCompletion = completion
         return nil
+    }
+}
+
+private struct OnStateUpdatableComponent: ServerDrivenComponent {
+    func toView(context: BeagleContext, dependencies: RenderableDependencies) -> UIView {
+        return OnStateUpdatableViewSpy()
+    }
+}
+
+private class OnStateUpdatableViewSpy: UIView, OnStateUpdatable {
+    private(set) var didCallOnUpdateState = false
+    
+    func onUpdateState(component: ServerDrivenComponent) -> Bool {
+        didCallOnUpdateState = true
+        return true
     }
 }

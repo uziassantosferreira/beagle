@@ -158,6 +158,7 @@ final class RepositoryTests: XCTestCase {
 final class ComponentDecodingStub: ComponentDecoding {
     
     func register<T>(_ type: T.Type, for typeName: String) where T: ServerDrivenComponent {}
+    func register<A>(_ type: A.Type, for typeName: String) where A: Action {}
     func componentType(forType type: String) -> Decodable.Type? { return nil }
     func actionType(forType type: String) -> Decodable.Type? { return nil }
     

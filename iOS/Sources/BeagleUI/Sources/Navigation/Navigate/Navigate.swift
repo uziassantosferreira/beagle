@@ -29,64 +29,35 @@ public enum Navigate: Action {
     case popView
     case popToView(String)
     
-    var newPath: Route.NewPath? {
+    public func execute(context: BeagleContext, sender: Any) {
+        execute(context: context, sender: sender, animated: true)
+    }
+    
+    func execute(context: BeagleContext, sender: Any, animated: Bool) {
         switch self {
-        case let .resetApplication(route),
-             let .resetStack(route),
-             let .pushStack(route),
-             let .pushView(route):
-            return route.path
-        default:
-            return nil
-        }
-    }
-    
-    public struct DeepLink {
-        let route: String
-        var data: [String: String]?
-        var shouldResetApplication: Bool = false
-
-        public init(
-            route: String,
-            data: [String: String]? = nil,
-            shouldResetApplication: Bool = false
-        ) {
-            self.route = route
-            self.data = data
-            self.shouldResetApplication = shouldResetApplication
-        }
-    }
-}
-
-public enum Route {
-    public struct NewPath {
-        public let route: String
-        public let shouldPrefetch: Bool
-        public let fallback: Screen?
-
-        public init(route: String, shouldPrefetch: Bool = false, fallback: Screen? = nil) {
-            self.route = route
-            self.shouldPrefetch = shouldPrefetch
-            self.fallback = fallback
-        }
-    }
-    
-    case remote(String, shouldPrefetch: Bool = false, fallback: Screen? = nil)
-    case declarative(Screen)
-    
-    var path: NewPath? {
-        switch self {
-        case let .remote(route, shouldPrefetch, fallback):
-            return NewPath(route: route, shouldPrefetch: shouldPrefetch, fallback: fallback)
-        case .declarative:
-            return nil
+        case .openExternalURL(let url):
+            executeOpenExternalURL(url, context: context)
+        case let .openNativeRoute(route, data, resetApplication):
+            executeOpenNativeRoute(route, data: data, resetApplication: resetApplication, context: context, animated: animated)
+        case .resetApplication(let route):
+            executeResetApplication(route: route, context: context, animated: animated)
+        case .resetStack(let route):
+            executeResetStack(route: route, context: context, animated: animated)
+        case .pushStack(let route):
+            executePushStack(route: route, context: context, animated: animated)
+        case .popStack:
+            executePopStack(context: context, animated: animated)
+        case .pushView(let route):
+            executePushView(route: route, context: context, animated: animated)
+        case .popView:
+            executePopView(context: context, animated: animated)
+        case .popToView(let route):
+            executePopToView(identifier: route, context: context, animated: animated)
         }
     }
 }
 
 // MARK: Decodable
-
-extension Navigate.DeepLink: Decodable {}
 
 extension Navigate: Decodable {
     
@@ -96,6 +67,12 @@ extension Navigate: Decodable {
         case url
     }
     
+    struct DeepLink: Decodable {
+        var route: String
+        var data: [String: String]?
+        var shouldResetApplication: Bool = false
+    }
+    
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let type = try container.decode(String.self, forKey: ._beagleAction_)
@@ -103,7 +80,7 @@ extension Navigate: Decodable {
         case "beagle:openexternalurl":
             self = .openExternalURL(try container.decode(String.self, forKey: .url))
         case "beagle:opennativeroute":
-            let deepLink: Navigate.DeepLink = try .init(from: decoder)
+            let deepLink: DeepLink = try .init(from: decoder)
             self = .openNativeRoute(deepLink.route,
                                     data: deepLink.data,
                                     shouldResetApplication: deepLink.shouldResetApplication)
@@ -129,35 +106,16 @@ extension Navigate: Decodable {
     }
 }
 
-extension Route: Decodable {
-    
-    enum CodingKeys: CodingKey {
-        case screen
-    }
-    
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        if let screen = try? container.decode(ScreenComponent.self, forKey: .screen) {
-            self = .declarative(screen.toScreen())
-        } else {
-            let newPath: Route.NewPath = try .init(from: decoder)
-            self = .remote(newPath.route, shouldPrefetch: newPath.shouldPrefetch, fallback: newPath.fallback)
+extension Navigate {
+    var newPath: Route.NewPath? {
+        switch self {
+        case let .resetApplication(route),
+             let .resetStack(route),
+             let .pushStack(route),
+             let .pushView(route):
+            return route.path
+        default:
+            return nil
         }
-    }
-}
-
-extension Route.NewPath: Decodable {
-    
-    enum CodingKeys: CodingKey {
-        case route
-        case shouldPrefetch
-        case fallback
-    }
-    
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.route = try container.decode(String.self, forKey: .route)
-        self.shouldPrefetch = try container.decodeIfPresent(Bool.self, forKey: .shouldPrefetch) ?? false
-        self.fallback = try container.decodeIfPresent(ScreenComponent.self, forKey: .fallback)?.toScreen()
     }
 }

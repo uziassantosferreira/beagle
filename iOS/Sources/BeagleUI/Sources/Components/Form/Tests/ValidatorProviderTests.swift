@@ -17,7 +17,7 @@
 import XCTest
 @testable import BeagleUI
 
-final class ValidatorHandlerTests: XCTestCase {
+final class ValidatorProviderTests: XCTestCase {
     
     func test_getValidator_shouldReturnTheValidator() {
         // Given

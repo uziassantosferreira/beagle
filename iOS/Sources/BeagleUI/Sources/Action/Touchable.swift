@@ -43,7 +43,7 @@ extension Touchable: Renderable {
             events.append(.analytics(clickAnalyticsEvent))
         }
         
-        context.register(events: events, inView: childView)
+        context.screenController.register(events: events, in: childView, context: context)
         prefetchComponent(context: context, dependencies: dependencies)
         return childView
     }
@@ -51,5 +51,43 @@ extension Touchable: Renderable {
     private func prefetchComponent(context: BeagleContext, dependencies: RenderableDependencies) {
         guard let newPath = (action as? Navigate)?.newPath else { return }
         dependencies.preFetchHelper.prefetchComponent(newPath: newPath)
+    }
+}
+
+extension UIViewController {
+    
+    fileprivate func register(events: [Event], in view: UIView, context: BeagleContext) {
+        let eventsGestureRecognizer = EventsGestureRecognizer(
+            events: events,
+            context: context,
+            target: self,
+            selector: #selector(handleEvents(_:))
+        )
+        view.addGestureRecognizer(eventsGestureRecognizer)
+        view.isUserInteractionEnabled = true
+    }
+
+    @objc func handleEvents(_ sender: EventsGestureRecognizer) {
+        guard let context = sender.context else { return }
+        sender.events.forEach {
+            switch $0 {
+            case .action(let action):
+                action.execute(context: context, sender: sender.view as Any)
+
+            case .analytics(let analyticsClick):
+                context.dependencies.analytics?.trackEventOnClick(analyticsClick)
+            }
+        }
+    }
+}
+
+final class EventsGestureRecognizer: UITapGestureRecognizer {
+    let events: [Event]
+    weak var context: BeagleContext?
+    
+    init(events: [Event], context: BeagleContext, target: Any?, selector: Selector?) {
+        self.events = events
+        self.context = context
+        super.init(target: target, action: selector)
     }
 }

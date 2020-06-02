@@ -21,13 +21,13 @@ final class ScreenController: UIViewController {
     private let screen: Screen
     private unowned let context: BeagleContext
     
-    let dependencies: BeagleScreenViewModel.Dependencies
+    let dependencies: BeagleDependenciesProtocol
     var layoutManager: LayoutManager?
     
     init(
         screen: Screen,
         context: BeagleContext,
-        dependencies: BeagleScreenViewModel.Dependencies
+        dependencies: BeagleDependenciesProtocol
     ) {
         self.screen = screen
         self.context = context

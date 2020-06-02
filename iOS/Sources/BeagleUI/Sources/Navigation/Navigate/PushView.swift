@@ -16,19 +16,10 @@
 
 import Foundation
 
-/// A custom action to be implemented by the application
-public struct CustomAction: Action, AutoInitiable {
-    
-    public let name: String
-    public let data: [String: String]
-
-// sourcery:inline:auto:CustomAction.Init
-    public init(
-        name: String,
-        data: [String: String]
-    ) {
-        self.name = name
-        self.data = data
+extension Navigate {
+    func executePushView(route: Route, context: BeagleContext, animated: Bool) {
+        let screenController = route.screenController(context: context)
+        context.screenController.navigationController?
+            .pushViewController(screenController, animated: animated)
     }
-// sourcery:end
 }

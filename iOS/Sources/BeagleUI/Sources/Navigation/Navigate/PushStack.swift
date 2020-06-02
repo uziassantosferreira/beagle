@@ -14,23 +14,12 @@
  * limitations under the License.
  */
 
-import UIKit
+import Foundation
 
-final class EventsGestureRecognizer: UITapGestureRecognizer {
-    let events: [Event]
-    
-    init(events: [Event], target: Any?, selector: Selector?) {
-        self.events = events
-        super.init(target: target, action: selector)
-    }
-}
-
-final class AnalyticsGestureRecognizer: UITapGestureRecognizer {
-    
-    let click: AnalyticsClick
-    
-    init(event: AnalyticsClick, target: Any?, selector: Selector?) {
-        self.click = event
-        super.init(target: target, action: selector)
+extension Navigate {
+    func executePushStack(route: Route, context: BeagleContext, animated: Bool) {
+        let navigation = context.dependencies.navigationControllerType.init()
+        navigation.viewControllers = [route.screenController(context: context)]
+        context.screenController.present(navigation, animated: animated)
     }
 }

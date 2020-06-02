@@ -107,7 +107,9 @@ extension NavigationBarItem {
         }
         
         @objc private func triggerAction() {
-            context?.doAction(barItem.action, sender: self)
+            if let context = context {
+                barItem.action.execute(context: context, sender: self)
+            }
         }
     }
 }

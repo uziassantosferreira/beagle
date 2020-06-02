@@ -15,7 +15,9 @@
  */
 
 /// Markup to define an action to be triggred in response to some event
-public protocol Action: Decodable {}
+public protocol Action: Decodable {
+    func execute(context: BeagleContext, sender: Any)
+}
 
 /// Defines a representation of an unknwon Action
 public struct UnknownAction: Action {
@@ -23,5 +25,8 @@ public struct UnknownAction: Action {
     
     public init(type: String) {
         self.type = type
+    }
+    
+    public func execute(context: BeagleContext, sender: Any) {
     }
 }

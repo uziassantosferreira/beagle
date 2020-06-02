@@ -32,48 +32,42 @@ final class TouchableTests: XCTestCase {
         assertSnapshotImage(view, size: CGSize(width: 100, height: 80))
     }
     
+    func testIfPrefetchWhenActionIsNavigate() {
+        let navigateRoute = "touchable-destination"
+        let action = Navigate.pushView(.remote(navigateRoute, shouldPrefetch: true))
+        let touchable = Touchable(action: action, child: ComponentDummy())
+        let context = BeagleContextStub()
+        let preFetchHelper = BeaglePrefetchHelpingSpy()
+        context.dependencies = BeagleScreenDependencies(preFetchHelper: preFetchHelper)
+        
+        _ = touchable.toView(context: context, dependencies: context.dependencies)
+        
+        XCTAssertEqual(preFetchHelper.prefetched, [navigateRoute])
+    }
+    
     func testIfAnalyticsClickAndActionShouldBeTriggered() {
         // Given
-        let component = SimpleComponent()
-        let context = BeagleContextSpy()
-        let analyticsExecutorSpy = AnalyticsExecutorSpy()
-        let actionExecutorSpy = ActionExecutorSpy()
-        let dependencies = BeagleScreenDependencies(
-            actionExecutor: actionExecutorSpy,
-            analytics: analyticsExecutorSpy
+        let action = ActionSpy()
+        let analyticsClick = AnalyticsClick(category: "some category")
+        let analytics = AnalyticsExecutorSpy()
+        let touchable = Touchable(
+            action: action,
+            clickAnalyticsEvent: analyticsClick,
+            child: ComponentDummy()
         )
+        let context = BeagleContextStub()
+        context.dependencies = BeagleScreenDependencies(analytics: analytics)
         
-        let controller = BeagleScreenViewController(viewModel: .init(
-            screenType: .declarative(component.content.toScreen()),
-            dependencies: dependencies
-        ))
-        
-        let navigationController = UINavigationController(rootViewController: controller)
-        guard let sut = navigationController.viewControllers.first as? BeagleScreenViewController else {
-            XCTFail("Could not find `BeagleScreenViewController`.")
-            return
-        }
-        
-        let actionDummy = ActionDummy()
-        let analyticsAction = AnalyticsClick(category: "some category")
-        let touchable = Touchable(action: actionDummy, clickAnalyticsEvent: analyticsAction, child: Text("mocked text"))
-        let view = touchable.toView(context: context, dependencies: dependencies)
-        
-        sut.register(events: [.action(actionDummy), .analytics(analyticsAction)], inView: view)
-        
-        let gesture = view.gestureRecognizers?.first { $0 is EventsGestureRecognizer }
-    
-        guard let eventsGestureRecognizer = gesture as? EventsGestureRecognizer else {
-            XCTFail("Could not find `EventsGestureRecognizer`")
-            return
-        }
-                
         // When
-        sut.handleGestureRecognizer(eventsGestureRecognizer)
-                
+        let view = touchable.toView(context: context, dependencies: context.dependencies)
+        view.gestureRecognizers?
+            .compactMap { $0 as? EventsGestureRecognizer }
+            .forEach { context.screenController.handleEvents($0) }
+        
         // Then
-        XCTAssert(context.didCallRegisterEvents)
-        XCTAssertTrue(analyticsExecutorSpy.didTrackEventOnClick)
-        XCTAssertTrue(actionExecutorSpy.didCallDoAction)
+        XCTAssertEqual(action.executionCount, 1)
+        XCTAssertTrue(action.lastContext === context)
+        XCTAssertTrue(action.lastSender as AnyObject === view)
+        XCTAssertTrue(analytics.didTrackEventOnClick)
     }
 }

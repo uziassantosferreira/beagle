@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import UIKit
+import Foundation
 
-public protocol DependencyNavigationController {
-    var navigationControllerType: BeagleNavigationController.Type { get }
+extension Navigate {
+    func executePopStack(context: BeagleContext, animated: Bool) {
+        context.screenController.dismiss(animated: animated)
+    }
 }

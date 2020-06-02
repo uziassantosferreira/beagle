@@ -22,26 +22,11 @@ class BeagleScreenViewModel {
         didSet { screen = nil }
     }
     var screen: Screen?
-    var state: State {
+    var state: ScreenState {
         didSet { stateObserver?.didChangeState(state) }
     }
     
-    public enum State {
-        case initialized
-        case loading
-        case success
-        case failure(ServerDrivenState.Error)
-    }
-
-    var dependencies: Dependencies
-
-    public typealias Dependencies =
-        DependencyActionExecutor
-        & DependencyRepository
-        & DependencyAnalyticsExecutor
-        & RenderableDependencies
-        & DependencyComponentDecoding
-        & DependencyNavigationController
+    var dependencies: BeagleDependenciesProtocol
 
     // MARK: Observer
 
@@ -53,7 +38,7 @@ class BeagleScreenViewModel {
 
     public init(
         screenType: ScreenType,
-        dependencies: Dependencies = Beagle.dependencies
+        dependencies: BeagleDependenciesProtocol = Beagle.dependencies
     ) {
         self.screenType = screenType
         self.dependencies = dependencies
@@ -131,5 +116,5 @@ class BeagleScreenViewModel {
 protocol BeagleScreenStateObserver: AnyObject {
     typealias ViewModel = BeagleScreenViewModel
 
-    func didChangeState(_ state: ViewModel.State)
+    func didChangeState(_ state: ScreenState)
 }

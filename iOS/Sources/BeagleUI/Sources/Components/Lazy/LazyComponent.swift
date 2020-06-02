@@ -37,7 +37,45 @@ import UIKit
 extension LazyComponent: Renderable {
     public func toView(context: BeagleContext, dependencies: RenderableDependencies) -> UIView {
         let view = initialState.toView(context: context, dependencies: dependencies)
-        context.lazyLoad(url: path, initialState: view)
+        view.lazyLoad(path, context: context)
         return view
+    }
+}
+
+extension UIView {
+    fileprivate func lazyLoad(_ url: String, context: BeagleContext) {
+        context.dependencies.repository.fetchComponent(url: url, additionalData: nil) {
+            [weak context] result in guard let context = context else { return }
+            switch result {
+            case .success(let component):
+                self.update(to: component, context: context)
+            case .failure(let error):
+                context.screenState = .failure(.lazyLoad(error))
+            }
+        }
+    }
+    
+    private func update(to component: ServerDrivenComponent, context: BeagleContext) {
+        let updatable = self as? OnStateUpdatable
+        let updated = updatable?.onUpdateState(component: component) ?? false
+
+        if updated && flex.isEnabled {
+            flex.markDirty()
+        } else if !updated {
+            replace(with: component, context: context)
+        }
+        context.applyLayout()
+    }
+    
+    private func replace(with component: ServerDrivenComponent, context: BeagleContext) {
+        guard let superview = superview else { return }
+        let view = component.toView(context: context, dependencies: context.dependencies)
+        view.frame = frame
+        superview.insertSubview(view, belowSubview: self)
+        removeFromSuperview()
+
+        if flex.isEnabled && !view.flex.isEnabled {
+            view.flex.isEnabled = true
+        }
     }
 }

@@ -18,163 +18,160 @@ import XCTest
 import SnapshotTesting
 @testable import BeagleUI
 
-// TODO: refactor this tests that are not actually asserting against behaviour
-
 final class FormTests: XCTestCase {
 
-    private lazy var form: Form = {
-        let action = FormRemoteAction(path: "submit", method: .post)
-        let form = Form(action: action, child: Container(children: [
-            FormInput(name: "name", child: InputComponent(value: "John Doe")),
-            FormInputHidden(name: "id", value: "123123"),
-            FormSubmit(child: Button(text: "Add"), enabled: true)
-        ]))
-        return form
-    }()
-    
-    func test_buildView_shouldRegisterFormSubmit() throws {
-        // Given
-        let context = BeagleContextSpy()
-                
-        // When
-        _ = form.toView(context: context, dependencies: dependencies)
-        
-        // Then
-        XCTAssertTrue(context.didCallRegisterFormSubmit)
-    }
-    
     func test_whenDecodingJson_thenItShouldReturnAForm() throws {
         let component: Form = try componentFromJsonFile(fileName: "formComponent")
         assertSnapshot(matching: component, as: .dump)
     }
-
-    func test_registerForm_shouldAddGestureRecognizer() throws {
-        // Given
-        let form = Form(action: ActionDummy(), child: ComponentDummy())
-        let formView = UIView()
-        let submitView = UILabel()
-
-        // When
-        screen.register(form: form, formView: formView, submitView: submitView, validatorHandler: nil)
-
-        // Then
-        XCTAssertEqual(1, submitView.gestureRecognizers?.count)
-        XCTAssertTrue(submitView.isUserInteractionEnabled)
+    
+    func test_whenSubmitFormRemoteAction_itShouldSubmitTheRequest() {
+        let remoteAction = FormRemoteAction(path: "remote-form", method: .post)
+        let form = simpleForm(action: remoteAction)
+        let resultAction = ActionSpy()
+        let context = BeagleContextStub()
+        context.dependencies = BeagleScreenDependencies(
+            repository: RepositoryStub(formResult: .success(resultAction))
+        )
+        
+        let view = form.toView(context: context, dependencies: context.dependencies)
+        triggerFormSubmit(in: view, controller: context.screenController)
+        
+        XCTAssertEqual(resultAction.executionCount, 1)
+        XCTAssertTrue(resultAction.lastContext === context)
     }
-
-    let validator1 = "valid"
-    let validator2 = "invalid"
-
-    func test_formSubmit_shouldValidateInputs() throws {
-        // Given
-        var validationCount = 0
-        validator[validator1] = { _ in
-            validationCount += 1
-            return true
+    
+    func test_whenSubmitFormLocalAction_itShouldSubmitTheRequest() {
+        let actionName = "form-test"
+        let localAction = FormLocalAction(name: actionName, data: [:])
+        let form = simpleForm(action: localAction)
+        let formHandler = LocalFormHandling()
+        let context = BeagleContextStub()
+        context.dependencies = BeagleScreenDependencies(
+            localFormHandler: formHandler
+        )
+        
+        var resultAction: FormLocalAction?
+        formHandler[actionName] = { _, action, _ in
+            resultAction = action
         }
-        validator[validator2] = { _ in
-            validationCount += 1
-            return false
+        let view = form.toView(context: context, dependencies: context.dependencies)
+        triggerFormSubmit(in: view, controller: context.screenController)
+        
+        XCTAssertEqual(resultAction?.name, actionName)
+        XCTAssertEqual(resultAction?.data, ["id": "42"])
+    }
+    
+    func test_SubmitCustomAction() {
+        let action = ActionSpy()
+        let form = Form(action: action, child: Container(children: [
+            FormSubmit(child: Text("Submit"))
+        ]))
+        let context = BeagleContextDummy()
+        
+        let view = form.toView(context: context, dependencies: context.dependencies)
+        triggerFormSubmit(in: view, controller: context.screenController)
+        
+        XCTAssertEqual(action.executionCount, 1)
+    }
+    
+    func test_whenSomeInputValidatorIsNotFound_itShouldNotExecuteTheAction() {
+        let action = ActionSpy()
+        let form = Form(action: action, child: Container(children: [
+            FormInput(
+                name: "input",
+                required: true,
+                validator: "unknown-validator",
+                child: InputStub()
+            ),
+            FormSubmit(child: Text("Submit"))
+        ]))
+        let context = BeagleContextDummy()
+        
+        let view = form.toView(context: context, dependencies: context.dependencies)
+        triggerFormSubmit(in: view, controller: context.screenController)
+        
+        XCTAssertEqual(action.executionCount, 0)
+    }
+    
+    func test_whenValidateInputs_itShouldNotifyErrors() {
+        let action = ActionSpy()
+        let form = Form(
+            action: action,
+            child: Container(children: [
+                requiredInput(name: "A", value: "valid", message: "error A"),
+                requiredInput(name: "B", value: "12345", message: "error B"),
+                requiredInput(name: "C", value: "abcde", message: "error C"),
+                FormSubmit(child: Button(text: "Submit"))
+            ])
+        )
+        let validatorProvider = ValidatorProviding()
+        let context = BeagleContextStub()
+        context.dependencies = BeagleScreenDependencies(
+            validatorProvider: validatorProvider
+        )
+        
+        validatorProvider["test-validator"] = { value in
+            (value as? String) == "valid"
         }
-
-        let view = Form(action: ActionDummy(), child: Container(children: [
-            FormInput(name: "name", required: true, validator: validator1, child: InputComponent(value: "John Doe")),
-            FormInput(name: "password", required: true, validator: validator2, child: InputComponent(value: "password")),
-            FormSubmit(child: Button(text: "Add"))
-        ])).toView(context: screen, dependencies: dependencies)
-
-        let gesture = submitGesture(in: view)
-
-        // When
-        screen.handleSubmitFormGesture(gesture)
-
-        // Then
-        XCTAssert(validationCount == 2)
-    }
-
-    func test_formSubmit_shouldExecuteResponseAction() throws {
-        // Given
-        repositoryStub.formResult = .success(CustomAction(name: "custom", data: [:]))
-        let gesture = submitGesture(in: formView)
-
-        // When
-        screen.handleSubmitFormGesture(gesture)
-
-        // Then
-        XCTAssert(actionExecutorSpy.didCallDoAction)
-    }
-
-    func test_formSubmit_shouldPassRightDataToBeSubmitted() throws {
-        // Given
-        let gesture = submitGesture(in: formView)
-
-        // When
-        screen.handleSubmitFormGesture(gesture)
-
-        // Then
-        let submittedData = repositoryStub.formData
-
-        XCTAssert(repositoryStub.didCallDispatch)
-        assertSnapshot(matching: submittedData, as: .dump)
-    }
-
-    func test_formSubmitError_shouldNotExecuteAction() throws {
-        // Given
-        let gesture = submitGesture(in: formView)
-
-        // When
-        screen.handleSubmitFormGesture(gesture)
-
-        // Then
-        XCTAssertFalse(actionExecutorSpy.didCallDoAction)
-    }
-
-    private lazy var formView = form.toView(context: screen, dependencies: dependencies)
-
-    private lazy var screen = BeagleScreenViewController(viewModel: .init(
-        screenType: .declarative(SimpleComponent().content.toScreen()),
-        dependencies: dependencies
-    ))
-
-    private lazy var dependencies = BeagleScreenDependencies(
-        actionExecutor: actionExecutorSpy,
-        repository: repositoryStub,
-        validatorProvider: validator
-    )
-
-    private lazy var repositoryStub = RepositoryStub()
-    private lazy var actionExecutorSpy = ActionExecutorSpy()
-    private lazy var validator = ValidatorProviding()
-
-    private func submitGesture(in formView: UIView) -> SubmitFormGestureRecognizer {
-        // swiftlint:disable force_unwrapping force_cast
-        let submit = findSubmitView(in: formView)!
-        return submit.childView.gestureRecognizers!.first as! SubmitFormGestureRecognizer
-    }
-
-    private func findSubmitView(in view: UIView) -> FormSubmit.FormSubmitView? {
-        if let submit = view as? FormSubmit.FormSubmitView {
-            return submit
-        } else {
-            return view.subviews.first { findSubmitView(in: $0) != nil } as? FormSubmit.FormSubmitView
+        let view = form.toView(context: context, dependencies: context.dependencies)
+        triggerFormSubmit(in: view, controller: context.screenController)
+        
+        let errorMessages = view.allSubviews.compactMap { subview in
+            (subview as? InputStubView)?.errorMessage
         }
+        
+        XCTAssertEqual(action.executionCount, 0)
+        XCTAssertEqual(errorMessages, ["error B", "error C"])
+    }
+    
+    private func triggerFormSubmit(in view: UIView, controller: UIViewController) {
+        view.gestureRecognizers?
+            .compactMap { $0 as? SubmitFormGestureRecognizer }
+            .forEach { submitGesture in
+                submitGesture.state = .ended
+                controller.handleSubmitFormGesture(submitGesture)
+            }
+        view.subviews.forEach { subview in
+            triggerFormSubmit(in: subview, controller: controller)
+        }
+    }
+    
+    private func simpleForm(action: Action) -> Form {
+        return Form(
+            action: action,
+            child: Container(children: [
+                FormInput(name: "id", child: InputStub(value: "42")),
+                FormSubmit(child: Text("Submit"))
+            ])
+        )
+    }
+    
+    private func requiredInput(name: String, value: String, message: String) -> FormInput {
+        return FormInput(
+            name: name,
+            required: true,
+            validator: "test-validator",
+            errorMessage: message,
+            child: InputStub(value: value)
+        )
     }
 }
 
 // MARK: - Stubs
 
-private struct InputComponent: ServerDrivenComponent {
-    let value: String
+private struct InputStub: ServerDrivenComponent {
+    var value: String = ""
 
     func toView(context: BeagleContext, dependencies: RenderableDependencies) -> UIView {
-        return InputStub(value: value)
+        return InputStubView(value: value)
     }
 }
 
-private class InputStub: UIView, InputValue, ValidationErrorListener, WidgetStateObservable {
-    var observable = Observable<WidgetState>(value: WidgetState(value: false))
+private class InputStubView: UIView, InputValue, ValidationErrorListener {
 
     let value: String
+    private(set) var errorMessage: String?
 
     init(value: String = "") {
         self.value = value
@@ -188,43 +185,8 @@ private class InputStub: UIView, InputValue, ValidationErrorListener, WidgetStat
     func getValue() -> Any {
         return value
     }
+
     func onValidationError(message: String?) {
-    }
-}
-
-private class HiddenStub: UIView, InputValue {
-
-    let value: String
-
-    init(_ formInputHidden: FormInputHidden, value: String) {
-        self.value = value
-        super.init(frame: .zero)
-        self.beagleFormElement = formInputHidden
-    }
-
-    required init?(coder: NSCoder) {
-        BeagleUI.fatalError("init(coder:) has not been implemented")
-    }
-
-    func getValue() -> Any {
-        return value
-    }
-}
-
-private class SubmitStub: UIView, Observer, WidgetStateObservable {
-    var observable: Observable<WidgetState> = Observable<WidgetState>(value: WidgetState(value: false))
-    var didCallChangeValue = false
-
-    init(_ formSubmit: FormSubmit) {
-        super.init(frame: .zero)
-        self.beagleFormElement = formSubmit
-    }
-
-    required init?(coder: NSCoder) {
-        BeagleUI.fatalError("init(coder:) has not been implemented")
-    }
-
-    func didChangeValue(_ value: Any?) {
-        didCallChangeValue = true
+        errorMessage = message
     }
 }

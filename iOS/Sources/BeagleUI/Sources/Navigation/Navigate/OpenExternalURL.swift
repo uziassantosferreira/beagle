@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import UIKit
+import Foundation
 
-public protocol DependencyNavigationController {
-    var navigationControllerType: BeagleNavigationController.Type { get }
+extension Navigate {
+    func executeOpenExternalURL(_ url: String, context: BeagleContext) {
+        context.dependencies.opener.tryToOpen(path: url)
+    }
 }

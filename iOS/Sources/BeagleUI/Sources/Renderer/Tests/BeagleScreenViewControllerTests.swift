@@ -127,7 +127,7 @@ final class BeagleScreenViewControllerTests: XCTestCase {
                 widgetProperties: .init(appearance: Appearance(backgroundColor: "#00FF00"), flex: Flex(grow: 1, margin: .init(all: .init(value: 10, type: .real))))
             )
         )
-        let screenController = BeagleScreenViewController(screen: screen)
+        let screenController = BeagleScreenViewController(.declarative(screen))
         screenController.additionalSafeAreaInsets = UIEdgeInsets(top: 10, left: 20, bottom: 30, right: 40)
         let navigation = BeagleNavigationController(rootViewController: screenController)
         navigation.navigationBar.barTintColor = .white

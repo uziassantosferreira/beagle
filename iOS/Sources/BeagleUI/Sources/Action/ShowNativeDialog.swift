@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import Foundation
+import UIKit
 
 /// Action to represent a native alert
 public struct ShowNativeDialog: Action, AutoInitiable {
@@ -34,4 +34,10 @@ public struct ShowNativeDialog: Action, AutoInitiable {
         self.buttonText = buttonText
     }
 // sourcery:end
+    
+    public func execute(context: BeagleContext, sender: Any) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: buttonText, style: .default))
+        context.screenController.present(alert, animated: true)
+    }
 }

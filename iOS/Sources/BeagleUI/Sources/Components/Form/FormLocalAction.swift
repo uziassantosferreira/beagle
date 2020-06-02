@@ -1,3 +1,4 @@
+//
 /*
  * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
@@ -14,8 +15,4 @@
  * limitations under the License.
  */
 
-import UIKit
-
-public protocol DependencyNavigationController {
-    var navigationControllerType: BeagleNavigationController.Type { get }
-}
+import Foundation

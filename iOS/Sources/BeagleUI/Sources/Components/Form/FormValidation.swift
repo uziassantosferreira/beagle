@@ -41,4 +41,14 @@ public struct FormValidation: Action {
     ) {
         self.errors = errors
     }
+    
+    public func execute(context: BeagleContext, sender: Any) {
+        let inputViews = (sender as? SubmitFormGestureRecognizer)?.formInputViews()
+        for error in errors {
+            let errorListener = inputViews?.first { view in
+                (view.beagleFormElement as? FormInput)?.name == error.inputName
+            } as? ValidationErrorListener
+            errorListener?.onValidationError(message: error.message)
+        }
+    }
 }

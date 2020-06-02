@@ -1,3 +1,4 @@
+//
 /*
  * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
@@ -14,8 +15,12 @@
  * limitations under the License.
  */
 
-import UIKit
+import Foundation
 
-public protocol DependencyNavigationController {
-    var navigationControllerType: BeagleNavigationController.Type { get }
+extension Navigate {
+    func executeResetStack(route: Route, context: BeagleContext, animated: Bool) {
+        let root = route.screenController(context: context)
+        context.screenController.navigationController?
+            .setViewControllers([root], animated: animated)
+    }
 }

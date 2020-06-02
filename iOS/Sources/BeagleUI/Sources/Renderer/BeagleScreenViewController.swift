@@ -28,7 +28,7 @@ public class BeagleScreenViewController: UIViewController {
         return viewModel.screen
     }
     
-    var dependencies: ViewModel.Dependencies {
+    public var dependencies: BeagleDependenciesProtocol {
         return viewModel.dependencies
     }
     
@@ -43,16 +43,8 @@ public class BeagleScreenViewController: UIViewController {
     
     // MARK: - Initialization
     
-    public convenience init(component: ServerDrivenComponent) {
-        self.init(screen: component.toScreen())
-    }
-    
-    public convenience init(screen: Screen) {
-        self.init(.declarative(screen))
-    }
-    
-    public convenience init(remote: ScreenType.Remote) {
-        self.init(.remote(remote))
+    public convenience init(_ component: ServerDrivenComponent) {
+        self.init(.declarative(component.toScreen()))
     }
     
     public convenience init(_ screenType: ScreenType) {
@@ -121,7 +113,7 @@ public class BeagleScreenViewController: UIViewController {
     
     // MARK: -
     
-    fileprivate func updateView(state: ViewModel.State) {
+    fileprivate func updateView(state: ScreenState) {
         switch state {
         case .initialized:
             break
@@ -188,7 +180,7 @@ public class BeagleScreenViewController: UIViewController {
 // MARK: - Observer
 
 extension BeagleScreenViewController: BeagleScreenStateObserver {
-    func didChangeState(_ state: BeagleScreenViewController.ViewModel.State) {
+    func didChangeState(_ state: ScreenState) {
         updateView(state: state)
     }
 }

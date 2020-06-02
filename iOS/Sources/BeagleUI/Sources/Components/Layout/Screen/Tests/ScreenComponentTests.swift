@@ -84,17 +84,21 @@ final class ScreenComponentTests: XCTestCase {
     
     func test_action_shouldBeTriggered() {
         // Given
-        let action = ActionDummy()
+        let action = ActionSpy()
         let barItem = NavigationBarItem(text: "shuttle", action: action)
-        let context = BeagleContextSpy()
+        let context = BeagleContextDummy()
         
         // When
-        let resultingView = barItem.toBarButtonItem(context: context, dependencies: BeagleScreenDependencies())
+        let resultingView = barItem.toBarButtonItem(
+            context: context,
+            dependencies: BeagleScreenDependencies()
+        )
         _ = resultingView.target?.perform(resultingView.action)
         
         // Then
-        XCTAssertTrue(context.didCallDoAction)
-        XCTAssertEqual(context.actionCalled as? ActionDummy, action)
+        XCTAssertEqual(action.executionCount, 1)
+        XCTAssertTrue(action.lastContext === context)
+        XCTAssertTrue(action.lastSender as AnyObject === resultingView)
     }
     
     func test_shouldPrefetchNavigateAction() {
@@ -153,20 +157,5 @@ final class ScreenComponentTests: XCTestCase {
         // Then
         XCTAssertTrue(analyticsExecutorSpy.didTrackEventOnScreenAppeared)
         XCTAssertTrue(analyticsExecutorSpy.didTrackEventOnScreenDisappeared)
-    }
-}
-
-// MARK: - Testing Helpers
-
-final class ActionExecutorDummy: ActionExecutor {
-    func doAction(_ action: Action, sender: Any, context: BeagleContext) {
-    }
-}
-
-final class ActionExecutorSpy: ActionExecutor {
-    private(set) var didCallDoAction = false
-    
-    func doAction(_ action: Action, sender: Any, context: BeagleContext) {
-        didCallDoAction = true
     }
 }

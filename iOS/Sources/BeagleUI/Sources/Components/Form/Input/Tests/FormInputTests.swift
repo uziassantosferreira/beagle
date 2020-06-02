@@ -18,14 +18,16 @@ import XCTest
 @testable import BeagleUI
 
 final class FormInputTests: XCTestCase {
-    
-    func test_initWithChild_shouldReturnValidFormInput() {
-        // Given / When
-        let sut = FormInput(name: "name", child:
-            Text("Text")
-        )
-        // Then
-        XCTAssert(sut.child is Text)
+
+    func test_renderedView_shouldHaveBeagleFormElement() {
+        let inputName = "test-form-input"
+        let formInput = FormInput(name: inputName, child: ComponentDummy())
+        let context = BeagleContextDummy()
+        
+        let view = formInput.toView(context: context, dependencies: context.dependencies)
+        let viewFormInput = view.beagleFormElement as? FormInput
+        
+        XCTAssertEqual(viewFormInput?.name, inputName)
     }
     
     func test_buildView_shouldReturnTheExpectedView() {

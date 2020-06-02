@@ -49,8 +49,7 @@ extension Button: Renderable {
         let button = BeagleUIButton.button(
             context: context,
             action: action,
-            clickAnalyticsEvent: clickAnalyticsEvent,
-            dependencies: dependencies
+            clickAnalyticsEvent: clickAnalyticsEvent
         )
         button.setTitle(text, for: .normal)
         
@@ -97,36 +96,34 @@ extension Button: Renderable {
         private var action: Action?
         private var clickAnalyticsEvent: AnalyticsClick?
         private weak var context: BeagleContext?
-        private var dependencies: DependencyTheme?
         
         static func button(
             context: BeagleContext,
             action: Action?,
-            clickAnalyticsEvent: AnalyticsClick? = nil,
-            dependencies: DependencyTheme
+            clickAnalyticsEvent: AnalyticsClick? = nil
         ) -> BeagleUIButton {
             let button = BeagleUIButton(type: .system)
             button.action = action
             button.context = context
-            button.dependencies = dependencies
             button.clickAnalyticsEvent = clickAnalyticsEvent
             button.addTarget(button, action: #selector(triggerTouchUpInsideActions), for: .touchUpInside)
             return button
         }
         
         @objc func triggerTouchUpInsideActions() {
+            guard let context = context else { return }
             if let action = action {
-                context?.doAction(action, sender: self)
+                action.execute(context: context, sender: self)
             }
             
             if let click = clickAnalyticsEvent {
-                context?.doAnalyticsAction(click, sender: self)
+                context.dependencies.analytics?.trackEventOnClick(click)
             }
         }
         
         private func applyStyle() {
             guard let style = style else { return }
-            dependencies?.theme.applyStyle(for: self as UIButton, withId: style)
+            context?.dependencies.theme.applyStyle(for: self as UIButton, withId: style)
         }
     }
 }

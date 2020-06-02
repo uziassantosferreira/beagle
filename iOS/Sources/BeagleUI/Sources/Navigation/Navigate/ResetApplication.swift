@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-import UIKit
+import Foundation
 
-public protocol DependencyNavigationController {
-    var navigationControllerType: BeagleNavigationController.Type { get }
+extension Navigate {
+    func executeResetApplication(route: Route, context: BeagleContext, animated: Bool) {
+        let root = route.screenController(context: context)
+        context.dependencies.windowManager.window?
+            .replace(rootViewController: root, animated: animated, completion: nil)
+    }
 }

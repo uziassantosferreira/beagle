@@ -38,6 +38,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         validator[FormScreen.textValidatorName] = FormScreen.textValidator
         
         let dependencies = BeagleDependencies()
+        
         dependencies.theme = Style.theme
         dependencies.urlBuilder = UrlBuilder(baseUrl: URL(string: .BASE_URL))
         dependencies.deepLinkHandler = deepLinkHandler
@@ -56,5 +57,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func registerCustomComponents() {
         Beagle.registerCustomComponent("DSCollection", componentType: DSCollection.self)
         Beagle.registerCustomComponent("SampleTextField", componentType: DemoTextField.self)
+    }
+    
+    private func registerCustomAction() {
+        Beagle.registerCustomAction("MyAction", actionType: MyAction.self)
+    }
+}
+
+struct MyAction: Action {
+    func execute(context: BeagleContext, sender: Any) {
+        
     }
 }

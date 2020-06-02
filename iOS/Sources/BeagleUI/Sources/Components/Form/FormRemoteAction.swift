@@ -36,4 +36,29 @@ public struct FormRemoteAction: Action, AutoInitiable {
         self.method = method
     }
 // sourcery:end
+    
+    public func execute(context: BeagleContext, sender: Any) {
+        execute(context: context, inputs: [:], sender: sender)
+    }
+    
+    func execute(context: BeagleContext, inputs: [String: String], sender: Any) {
+        context.screenState = .loading
+        
+        let data = Request.FormData(
+            method: method,
+            values: inputs
+        )
+        
+        context.dependencies.repository.submitForm(url: path, additionalData: nil, data: data) {
+            [weak context] result in guard let context = context else { return }
+            switch result {
+            case .success(let action):
+                context.screenState = .success
+                action.execute(context: context, sender: sender)
+            case .failure(let error):
+                context.screenState = .failure(.submitForm(error))
+            }
+        }
+        context.dependencies.logger.log(Log.form(.submittedValues(values: inputs)))
+    }
 }

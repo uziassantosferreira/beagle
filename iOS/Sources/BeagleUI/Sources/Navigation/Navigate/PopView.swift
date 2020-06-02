@@ -1,3 +1,4 @@
+//
 /*
  * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
@@ -14,25 +15,17 @@
  * limitations under the License.
  */
 
-import XCTest
-@testable import BeagleUI
+import Foundation
 
-final class CustomActionHandlerTests: XCTestCase {
-    
-    func test_whenHandleCustomAction_shouldCallHandler() {
-        // Given
-        let actionName = "action-name"
-        let action = CustomAction(name: actionName, data: [:])
-        let sut = CustomActionHandling()
-        var didHandleActioin = false
-        sut[actionName] = { _, _, _ in
-            didHandleActioin = true
+extension Navigate {
+    func executePopView(context: BeagleContext, animated: Bool) {
+        let navigation = context.screenController.navigationController
+        if navigation?.viewControllers.count == 1 {
+            context.dependencies.logger.log(Log.navigation(
+                .errorTryingToPopScreenOnNavigatorWithJustOneScreen
+            ))
+        } else {
+            navigation?.popViewController(animated: animated)
         }
-        
-        // When
-        sut.handle(context: BeagleContextDummy(), action: action) { _ in }
-        
-        // Then
-        XCTAssertTrue(didHandleActioin)
     }
 }
