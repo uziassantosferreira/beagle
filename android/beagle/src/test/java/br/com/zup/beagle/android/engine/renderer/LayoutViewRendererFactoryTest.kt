@@ -22,7 +22,6 @@ import br.com.zup.beagle.android.setup.BeagleEnvironment
 import br.com.zup.beagle.widget.form.Form
 import br.com.zup.beagle.widget.layout.Container
 import br.com.zup.beagle.widget.layout.Horizontal
-import br.com.zup.beagle.android.widget.layout.ScreenComponent
 import br.com.zup.beagle.widget.layout.ScrollView
 import br.com.zup.beagle.widget.layout.Spacer
 import br.com.zup.beagle.widget.layout.Stack

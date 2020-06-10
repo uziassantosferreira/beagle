@@ -21,6 +21,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import br.com.zup.beagle.android.components.PageIndicator
 import br.com.zup.beagle.ext.applyFlex
 import br.com.zup.beagle.android.utils.toView
 import br.com.zup.beagle.widget.core.AlignSelf
@@ -36,7 +37,7 @@ class PageViewFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val declarative = PageView(
-            pageIndicator = PageIndicatorView(
+            pageIndicator = PageIndicator(
                 selectedColor = "#000000",
                 unselectedColor = "#888888"
             ),

@@ -22,7 +22,6 @@ import android.view.ViewGroup
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import br.com.zup.beagle.android.engine.renderer.RootView
-import br.com.zup.beagle.android.engine.renderer.layout.PageViewAdapter
 import br.com.zup.beagle.android.view.BeaglePageView
 import br.com.zup.beagle.android.view.ViewFactory
 import br.com.zup.beagle.android.widget.core.ViewConvertable

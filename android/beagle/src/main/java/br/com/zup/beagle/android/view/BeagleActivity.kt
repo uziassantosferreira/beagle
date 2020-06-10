@@ -27,15 +27,13 @@ import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import br.com.zup.beagle.R
+import br.com.zup.beagle.android.components.layout.Screen
 import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.android.data.BeagleViewModel
 import br.com.zup.beagle.android.data.ViewState
 import br.com.zup.beagle.android.data.serializer.BeagleSerializer
 import br.com.zup.beagle.android.setup.BeagleEnvironment
 import br.com.zup.beagle.android.utils.configureSupportActionBar
-import br.com.zup.beagle.android.utils.toComponent
-import br.com.zup.beagle.widget.layout.Screen
-import br.com.zup.beagle.android.widget.layout.ScreenComponent
 import kotlinx.android.parcel.Parcelize
 
 sealed class ServerDrivenState {
@@ -95,7 +93,7 @@ abstract class BeagleActivity : AppCompatActivity() {
                     putExtra(FIRST_SCREEN_REQUEST_KEY, screenRequest)
                 }
                 screen?.let {
-                    putExtra(FIRST_SCREEN_KEY, beagleSerializer.serializeComponent(screen.toComponent()))
+                    putExtra(FIRST_SCREEN_KEY, beagleSerializer.serializeComponent(screen))
                 }
             }
         }
@@ -142,7 +140,7 @@ abstract class BeagleActivity : AppCompatActivity() {
             screen?.let { screen ->
                 viewModel.fetchComponent(
                     ScreenRequest(""),
-                    beagleSerializer.deserializeComponent(screen) as ScreenComponent
+                    beagleSerializer.deserializeComponent(screen) as Screen
                 )
             } ?: run {
                 screenRequest?.let { request -> viewModel.fetchComponent(request) }
@@ -163,7 +161,7 @@ abstract class BeagleActivity : AppCompatActivity() {
     }
 
     fun navigateTo(screenRequest: ScreenRequest, screen: Screen?) {
-        viewModel.fetchComponent(screenRequest, screen?.toComponent())
+        viewModel.fetchComponent(screenRequest, screen)
     }
 
     private fun showScreen(screenName: String?, component: ServerDrivenComponent) {

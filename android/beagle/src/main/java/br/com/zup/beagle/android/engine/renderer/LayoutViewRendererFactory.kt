@@ -18,7 +18,6 @@ package br.com.zup.beagle.android.engine.renderer
 
 import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.android.engine.renderer.layout.FormViewRenderer
-import br.com.zup.beagle.android.widget.layout.ScreenComponent
 import br.com.zup.beagle.widget.form.Form
 
 internal class LayoutViewRendererFactory : AbstractViewRendererFactory {
@@ -27,7 +26,6 @@ internal class LayoutViewRendererFactory : AbstractViewRendererFactory {
     override fun make(component: ServerDrivenComponent): ViewRenderer<*> {
 
         return when (component) {
-            is ScreenComponent -> ScreenViewRenderer(component)
             is Form -> FormViewRenderer(component)
             else -> throw IllegalArgumentException("$component is not a Layout Widget.")
         }
