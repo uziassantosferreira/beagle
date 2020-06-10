@@ -14,33 +14,33 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.engine.renderer.layout
+package br.com.zup.beagle.android.components.layout
 
+import android.content.Context
 import android.view.View
-import br.com.zup.beagle.android.engine.renderer.LayoutViewRenderer
-import br.com.zup.beagle.android.engine.renderer.RootView
-import br.com.zup.beagle.android.engine.renderer.ViewRendererFactory
 import br.com.zup.beagle.android.view.BeagleFlexView
 import br.com.zup.beagle.android.view.ViewFactory
+import br.com.zup.beagle.android.widget.core.ViewConvertable
+import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.widget.core.Flex
 import br.com.zup.beagle.widget.layout.Container
 
-internal class ContainerViewRenderer(
-    override val component: Container,
-    viewRendererFactory: ViewRendererFactory = ViewRendererFactory(),
-    viewFactory: ViewFactory = ViewFactory()
-) : LayoutViewRenderer<Container>(viewRendererFactory, viewFactory) {
+data class Container(
+    override val children: List<ServerDrivenComponent>
+) : Container(children), ViewConvertable {
 
-    override fun buildView(rootView: RootView): View {
-        return viewFactory.makeBeagleFlexView(rootView.getContext(), component.flex ?: Flex())
+    private val viewFactory = ViewFactory()
+
+    override fun buildView(context: Context): View {
+        return viewFactory.makeBeagleFlexView(context, flex ?: Flex())
             .apply {
-                addChildren(this, rootView)
+                addChildren(this)
             }
     }
 
-    private fun addChildren(beagleFlexView: BeagleFlexView, rootView: RootView) {
-        component.children.forEach { child ->
-            beagleFlexView.addServerDrivenComponent(child, rootView)
+    private fun addChildren(beagleFlexView: BeagleFlexView) {
+        children.forEach { child ->
+//            beagleFlexView.addServerDrivenComponent(child, rootView)
         }
     }
 }

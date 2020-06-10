@@ -14,33 +14,35 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.engine.renderer.layout
+package br.com.zup.beagle.android.components
 
+import android.content.Context
 import android.view.View
-import br.com.zup.beagle.android.engine.renderer.LayoutViewRenderer
-import br.com.zup.beagle.android.engine.renderer.RootView
 import br.com.zup.beagle.android.engine.renderer.ViewRendererFactory
 import br.com.zup.beagle.android.view.ViewFactory
+import br.com.zup.beagle.android.widget.core.ViewConvertable
+import br.com.zup.beagle.core.LayoutComponent
+import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.widget.core.Flex
 import br.com.zup.beagle.widget.core.Size
 import br.com.zup.beagle.widget.core.UnitType
 import br.com.zup.beagle.widget.core.UnitValue
 import br.com.zup.beagle.widget.layout.Spacer
 
-internal class SpacerViewRenderer(
-    override val component: Spacer,
-    viewRendererFactory: ViewRendererFactory = ViewRendererFactory(),
-    viewFactory: ViewFactory = ViewFactory()
-) : LayoutViewRenderer<Spacer>(viewRendererFactory, viewFactory) {
+data class Spacer(
+    override val size: Double
+) : Spacer(size), ViewConvertable {
 
-    override fun buildView(rootView: RootView): View {
+    private val viewFactory: ViewFactory = ViewFactory()
+
+    override fun buildView(context: Context): View {
         val flex = Flex(
             size = Size(
-                width = UnitValue(component.size, UnitType.REAL),
-                height = UnitValue(component.size, UnitType.REAL)
+                width = UnitValue(size, UnitType.REAL),
+                height = UnitValue(size, UnitType.REAL)
             )
         )
 
-        return viewFactory.makeBeagleFlexView(rootView.getContext(), flex)
+        return viewFactory.makeBeagleFlexView(context, flex)
     }
 }

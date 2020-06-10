@@ -14,30 +14,39 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.engine.renderer.layout
+package br.com.zup.beagle.android.components.layout
 
+import android.content.Context
 import android.view.View
-import br.com.zup.beagle.core.FlexComponent
-import br.com.zup.beagle.core.ServerDrivenComponent
-import br.com.zup.beagle.android.engine.renderer.LayoutViewRenderer
 import br.com.zup.beagle.android.engine.renderer.RootView
 import br.com.zup.beagle.android.engine.renderer.ViewRendererFactory
 import br.com.zup.beagle.android.view.BeagleFlexView
 import br.com.zup.beagle.android.view.ViewFactory
+import br.com.zup.beagle.android.widget.core.ViewConvertable
+import br.com.zup.beagle.core.FlexComponent
+import br.com.zup.beagle.core.LayoutComponent
+import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.widget.core.Flex
 import br.com.zup.beagle.widget.core.FlexPositionType
 import br.com.zup.beagle.widget.layout.Stack
 
-internal class StackViewRenderer(
-    override val component: Stack,
-    viewRendererFactory: ViewRendererFactory = ViewRendererFactory(),
-    viewFactory: ViewFactory = ViewFactory()
-) : LayoutViewRenderer<Stack>(viewRendererFactory, viewFactory) {
+/**
+ * component will hold a stack of components. It display its children relative to the stack.
+ *
+ * @param children define the components to be stacked on the Stack component view.
+ *
+ */
+data class Stack(
+    override val children: List<ServerDrivenComponent>
+) : Stack(children), ViewConvertable {
 
-    override fun buildView(rootView: RootView): View {
-        return viewFactory.makeBeagleFlexView(rootView.getContext()).apply {
+    private val viewRendererFactory: ViewRendererFactory = ViewRendererFactory()
+    private val viewFactory: ViewFactory = ViewFactory()
+    override fun buildView(context: Context): View {
+
+        return viewFactory.makeBeagleFlexView(context).apply {
             clipChildren = false
-            addChildrenViews(component.children, this, rootView)
+//            addChildrenViews(children, this, rootView)
         }
     }
 

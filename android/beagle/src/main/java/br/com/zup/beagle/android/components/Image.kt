@@ -14,28 +14,27 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.engine.renderer.ui
+package br.com.zup.beagle.android.components
 
+import android.content.Context
 import android.view.View
 import android.widget.ImageView
 import br.com.zup.beagle.android.engine.mapper.ViewMapper
-import br.com.zup.beagle.android.engine.renderer.RootView
-import br.com.zup.beagle.android.engine.renderer.UIViewRenderer
 import br.com.zup.beagle.android.setup.BeagleEnvironment
-import br.com.zup.beagle.android.view.ViewFactory
+import br.com.zup.beagle.android.widget.core.ViewConvertable
 import br.com.zup.beagle.widget.core.ImageContentMode
 import br.com.zup.beagle.widget.ui.Image
 
-internal class ImageViewRenderer(
-    override val component: Image,
-    private val viewFactory: ViewFactory = ViewFactory(),
-    private val viewMapper: ViewMapper = ViewMapper()
-) : UIViewRenderer<Image>() {
+data class Image(override val name: String,
+                 override val contentMode: ImageContentMode? = null /* = ImageContentMode.FIT_CENTER */)
+    : br.com.zup.beagle.widget.ui.Image(name, contentMode), ViewConvertable {
 
-    override fun buildView(rootView: RootView): View {
-        return viewFactory.makeImageView(rootView.getContext()).apply {
-            setData(component, viewMapper)
-        }
+    private val viewMapper: ViewMapper = ViewMapper()
+
+    override fun buildView(context: Context): View {
+        val imageView = ImageView(context)
+        imageView.setData(this, viewMapper)
+        return imageView
     }
 
     private fun ImageView.setData(widget: Image, viewMapper: ViewMapper) {

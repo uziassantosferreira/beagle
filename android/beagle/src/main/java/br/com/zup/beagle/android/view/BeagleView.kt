@@ -58,7 +58,7 @@ internal class BeagleView(
 
     private fun loadView(rootView: RootView, screenRequest: ScreenRequest, view: View?) {
         this.rootView = rootView
-        viewModel.state.observe(rootView.getLifecycleOwner(), Observer<ViewState> { state ->
+        viewModel.state.observe(rootView.getLifecycleOwner(), Observer { state ->
             handleResponse(state, view)
         })
 

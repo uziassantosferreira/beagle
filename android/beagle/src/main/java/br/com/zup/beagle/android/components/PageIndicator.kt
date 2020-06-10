@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.widget.pager
+package br.com.zup.beagle.android.components
 
 import android.content.Context
 import android.graphics.Color
-import br.com.zup.beagle.android.widget.pager.PageIndicatorComponent
-import br.com.zup.beagle.android.widget.pager.PageIndicatorOutput
 import br.com.zup.beagle.android.view.BeaglePageIndicatorView
 import br.com.zup.beagle.android.view.ViewFactory
+import br.com.zup.beagle.android.widget.pager.PageIndicatorComponent
+import br.com.zup.beagle.android.widget.pager.PageIndicatorOutput
 import br.com.zup.beagle.widget.pager.PageIndicator
 
-class PageIndicatorView(
+class PageIndicator(
     selectedColor: String,
     unselectedColor: String
 ) : PageIndicator(selectedColor, unselectedColor),
@@ -32,16 +32,9 @@ class PageIndicatorView(
 
     @Transient
     private var viewFactory: ViewFactory = ViewFactory()
+
     @Transient
     private lateinit var pageIndicator: BeaglePageIndicatorView
-
-    internal constructor(
-        selectedColor: String,
-        unselectedColor: String,
-        viewFactory: ViewFactory
-    ) : this(selectedColor, unselectedColor) {
-        this.viewFactory = viewFactory
-    }
 
     override fun buildView(context: Context) = viewFactory.makePageIndicator(context).apply {
         pageIndicator = this

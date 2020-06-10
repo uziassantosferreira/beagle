@@ -14,20 +14,28 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.utils
+package br.com.zup.beagle.android.components
 
+import android.content.Context
 import android.view.View
-import br.com.zup.beagle.core.IdentifierComponent
+import br.com.zup.beagle.android.view.ViewFactory
+import br.com.zup.beagle.android.widget.core.ViewConvertable
 import br.com.zup.beagle.core.ServerDrivenComponent
 
-class ComponentStylization<T : ServerDrivenComponent>(
-    private val accessibilitySetup: AccessibilitySetup = AccessibilitySetup()
-) {
-    fun apply(view: View, component: T) {
-        view.applyAppearance(component)
-        (component as? IdentifierComponent)?.id?.let {
-            view.id = it.toAndroidId()
+data class TabItem(
+    override val title: String? = null,
+    override val content: ServerDrivenComponent,
+    override val icon: String? = null
+) : br.com.zup.beagle.widget.ui.TabItem(title, content, icon), ViewConvertable {
+
+
+    private val viewFactory: ViewFactory = ViewFactory()
+
+
+    override fun buildView(context: Context): View {
+        val view = viewFactory.makeBeagleFlexView(context).also {
+//            it.addServerDrivenComponent(content, rootView = )
         }
-        accessibilitySetup.applyAccessibility(view, component)
+        return view
     }
 }

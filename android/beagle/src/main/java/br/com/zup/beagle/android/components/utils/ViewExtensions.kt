@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.utils
+package br.com.zup.beagle.android.components.utils
 
 import android.app.Activity
 import android.content.Context
@@ -24,9 +24,10 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import br.com.zup.beagle.android.utils.StyleManager
+import br.com.zup.beagle.android.utils.toAndroidColor
 import br.com.zup.beagle.core.AppearanceComponent
 import br.com.zup.beagle.core.ServerDrivenComponent
-import br.com.zup.beagle.android.view.BeagleImageView
 import br.com.zup.beagle.android.view.ViewFactory
 
 internal var viewExtensionsViewFactory = ViewFactory()
@@ -74,7 +75,7 @@ internal fun View.applyBackgroundColor(appearanceWidget: AppearanceComponent) {
 internal fun View.applyCornerRadius(appearanceWidget: AppearanceComponent) {
     appearanceWidget.appearance?.cornerRadius?.let { cornerRadius ->
         if (cornerRadius.radius > FLOAT_ZERO) {
-            (this as? BeagleImageView)?.cornerRadius = cornerRadius.radius.toFloat()
+//            (this as? BeagleImageView)?.cornerRadius = cornerRadius.radius.toFloat()
             (this.background as? GradientDrawable)?.cornerRadius = cornerRadius.radius.toFloat()
         }
     }

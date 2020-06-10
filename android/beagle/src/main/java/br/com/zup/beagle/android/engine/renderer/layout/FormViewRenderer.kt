@@ -33,7 +33,7 @@ import br.com.zup.beagle.android.form.FormValidatorController
 import br.com.zup.beagle.android.form.ValidatorHandler
 import br.com.zup.beagle.android.logger.BeagleMessageLogs
 import br.com.zup.beagle.android.setup.BeagleEnvironment
-import br.com.zup.beagle.android.utils.hideKeyboard
+import br.com.zup.beagle.android.components.utils.hideKeyboard
 import br.com.zup.beagle.android.view.BeagleActivity
 import br.com.zup.beagle.android.view.ServerDrivenState
 import br.com.zup.beagle.android.view.ViewFactory

@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.utils
+package br.com.zup.beagle.android.components.utils
 
-import android.graphics.Canvas
-import android.graphics.Path
-import android.graphics.RectF
+import android.view.View
+import br.com.zup.beagle.android.utils.toAndroidId
+import br.com.zup.beagle.core.IdentifierComponent
+import br.com.zup.beagle.core.ServerDrivenComponent
 
-internal fun Canvas.applyRadius(radius: Float) {
-    if (radius > FLOAT_ZERO) {
-        val path = Path()
-        val rect = RectF(FLOAT_ZERO, FLOAT_ZERO, this.width.toFloat(), this.height.toFloat())
-        path.addRoundRect(rect, radius, radius, Path.Direction.CW)
-        this.clipPath(path)
+class ComponentStylization<T : ServerDrivenComponent>(
+    private val accessibilitySetup: AccessibilitySetup = AccessibilitySetup()
+) {
+    fun apply(view: View, component: T) {
+        view.applyAppearance(component)
+        (component as? IdentifierComponent)?.id?.let {
+            view.id = it.toAndroidId()
+        }
+        accessibilitySetup.applyAccessibility(view, component)
     }
 }

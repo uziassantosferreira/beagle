@@ -18,7 +18,7 @@ package br.com.zup.beagle.android.engine.renderer
 
 import android.view.View
 import br.com.zup.beagle.core.ServerDrivenComponent
-import br.com.zup.beagle.android.utils.ComponentStylization
+import br.com.zup.beagle.android.components.utils.ComponentStylization
 import br.com.zup.beagle.android.view.ViewFactory
 
 internal abstract class ViewRenderer<T : ServerDrivenComponent>(

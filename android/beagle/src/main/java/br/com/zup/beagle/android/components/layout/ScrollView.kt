@@ -14,29 +14,41 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.engine.renderer.layout
+package br.com.zup.beagle.android.components.layout
 
+import android.content.Context
 import android.view.View
 import android.view.ViewGroup
-import br.com.zup.beagle.core.ServerDrivenComponent
-import br.com.zup.beagle.android.engine.renderer.LayoutViewRenderer
 import br.com.zup.beagle.android.engine.renderer.RootView
 import br.com.zup.beagle.android.engine.renderer.ViewRendererFactory
 import br.com.zup.beagle.android.view.ViewFactory
+import br.com.zup.beagle.android.widget.core.ViewConvertable
+import br.com.zup.beagle.core.LayoutComponent
+import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.widget.core.Flex
 import br.com.zup.beagle.widget.core.FlexDirection
 import br.com.zup.beagle.widget.layout.ScrollAxis
 import br.com.zup.beagle.widget.layout.ScrollView
 
-internal class ScrollViewRenderer(
-    override val component: ScrollView,
-    viewRendererFactory: ViewRendererFactory = ViewRendererFactory(),
-    viewFactory: ViewFactory = ViewFactory()
-) : LayoutViewRenderer<ScrollView>(viewRendererFactory, viewFactory) {
+/**
+ * Component is a specialized container that will display its components in a Scroll
+ *
+ * @param children define a list of components to be displayed on this view.
+ * @param scrollDirection define the scroll roll direction on screen.
+ * @param scrollBarEnabled determine if the Scroll bar is displayed or not. It is displayed by default.
+ *
+ */
+data class ScrollView(
+    override val children: List<ServerDrivenComponent>,
+    override val scrollDirection: ScrollAxis? = null,
+    override val scrollBarEnabled: Boolean? = null
+) : ScrollView(children, scrollDirection, scrollBarEnabled), ViewConvertable {
 
-    override fun buildView(rootView: RootView): View {
-        val scrollDirection = component.scrollDirection ?: ScrollAxis.VERTICAL
-        val scrollBarEnabled = component.scrollBarEnabled ?: true
+    private val viewFactory: ViewFactory = ViewFactory()
+
+    override fun buildView(context: Context): View {
+        val scrollDirection = scrollDirection ?: ScrollAxis.VERTICAL
+        val scrollBarEnabled = scrollBarEnabled ?: true
 
         val flexDirection = if (scrollDirection == ScrollAxis.VERTICAL) {
             FlexDirection.COLUMN
@@ -47,20 +59,21 @@ internal class ScrollViewRenderer(
         val flexChild = Flex(flexDirection = flexDirection)
         val flexParent = Flex(grow = 1.0)
 
-        return viewFactory.makeBeagleFlexView(rootView.getContext(), flexParent).apply {
+        return viewFactory.makeBeagleFlexView(context, flexParent).apply {
             addView(if (scrollDirection == ScrollAxis.HORIZONTAL) {
-                viewFactory.makeHorizontalScrollView(rootView.getContext()).apply {
+                viewFactory.makeHorizontalScrollView(context).apply {
                     isHorizontalScrollBarEnabled = scrollBarEnabled
-                    addChildrenViews(this, component.children, rootView, flexChild)
+//                    addChildrenViews(this, children, rootView, flexChild)
                 }
             } else {
-                viewFactory.makeScrollView(rootView.getContext()).apply {
+                viewFactory.makeScrollView(context).apply {
                     isVerticalScrollBarEnabled = scrollBarEnabled
-                    addChildrenViews(this, component.children, rootView, flexChild)
+//                    addChildrenViews(this, children, rootView, flexChild)
                 }
             }, flexParent)
         }
     }
+
 
     private fun addChildrenViews(
         scrollView: ViewGroup,

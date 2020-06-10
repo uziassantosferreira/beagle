@@ -26,6 +26,6 @@ import br.com.zup.beagle.widget.Widget
  * @param children define a list of components that are part of the container.
  *
  */
-data class Container(
-    val children: List<ServerDrivenComponent>
+open class Container(
+    open val children: List<ServerDrivenComponent>
 ) : Widget(), LayoutComponent

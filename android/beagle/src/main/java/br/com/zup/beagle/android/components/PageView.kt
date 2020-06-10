@@ -14,45 +14,47 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.engine.renderer.layout
+package br.com.zup.beagle.android.components
 
+import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
-import br.com.zup.beagle.core.ServerDrivenComponent
-import br.com.zup.beagle.android.engine.renderer.LayoutViewRenderer
 import br.com.zup.beagle.android.engine.renderer.RootView
-import br.com.zup.beagle.android.engine.renderer.ViewRendererFactory
+import br.com.zup.beagle.android.engine.renderer.layout.PageViewAdapter
 import br.com.zup.beagle.android.view.BeaglePageView
 import br.com.zup.beagle.android.view.ViewFactory
-import br.com.zup.beagle.widget.layout.PageView
+import br.com.zup.beagle.android.widget.core.ViewConvertable
 import br.com.zup.beagle.android.widget.pager.PageIndicatorComponent
+import br.com.zup.beagle.core.ServerDrivenComponent
+import br.com.zup.beagle.widget.layout.PageView
 
-internal class PageViewRenderer(
-    override val component: PageView,
-    viewRendererFactory: ViewRendererFactory = ViewRendererFactory(),
-    viewFactory: ViewFactory = ViewFactory()
-) : LayoutViewRenderer<PageView>(viewRendererFactory, viewFactory) {
+data class PageView(
+    override val pages: List<ServerDrivenComponent>,
+    override val pageIndicator: PageIndicatorComponent? = null
+) : PageView(pages, pageIndicator), ViewConvertable {
 
-    override fun buildView(rootView: RootView): View {
-        val container = viewFactory.makeBeagleFlexView(rootView.getContext())
+    private val viewFactory: ViewFactory = ViewFactory()
 
-        val viewPager = viewFactory.makeViewPager(rootView.getContext()).apply {
-            adapter = PageViewAdapter(rootView, component.pages, viewFactory)
+    override fun buildView(context: Context): View {
+        val container = viewFactory.makeBeagleFlexView(context)
+
+        val viewPager = viewFactory.makeViewPager(context).apply {
+//            adapter = PageViewAdapter(rootView, pages, viewFactory)
         }
 
         // this container is needed because this view fill the parent completely
         val containerViewPager =
-            viewFactory.makeBeagleFlexView(rootView.getContext()).apply {
+            viewFactory.makeBeagleFlexView(context).apply {
                 addView(viewPager)
             }
         container.addView(containerViewPager)
 
-        component.pageIndicator?.let {
-            val pageIndicatorView = viewRendererFactory.make(it).build(rootView)
-            setupPageIndicator(component.pages.size, viewPager, component.pageIndicator as PageIndicatorComponent?)
-            container.addView(pageIndicatorView)
+        pageIndicator?.let {
+//            val pageIndicatorView = viewRendererFactory.make(it).build(rootView)
+            setupPageIndicator(pages.size, viewPager, pageIndicator)
+//            container.addView(pageIndicatorView)
         }
 
         return container
@@ -72,7 +74,8 @@ internal class PageViewRenderer(
                 position: Int,
                 positionOffset: Float,
                 positionOffsetPixels: Int
-            ) {}
+            ) {
+            }
 
             override fun onPageSelected(position: Int) {
                 pageIndicator?.onItemUpdated(position)

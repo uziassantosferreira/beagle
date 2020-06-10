@@ -28,9 +28,9 @@ import br.com.zup.beagle.widget.Widget
  * @param style reference a native style in your local styles file to be applied on this button.
  * @param action define a specific action that this button triggers when clicked on.
  */
-data class Button(
-    val text: String,
-    val style: String? = null,
-    val action: Action? = null,
-    override val clickAnalyticsEvent: ClickEvent? = null
+open class Button(
+    open val text: String,
+    open val style: String? = null,
+    open val action: Action? = null,
+    open override val clickAnalyticsEvent: ClickEvent? = null
 ) : Widget(), TouchableAnalytics

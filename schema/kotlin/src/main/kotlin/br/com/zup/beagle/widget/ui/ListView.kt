@@ -50,9 +50,9 @@ enum class ListDirection {
  * @param direction define the list direction.
  *
  */
-data class ListView(
-    val rows: List<ServerDrivenComponent>,
-    val direction: ListDirection = VERTICAL
+open class ListView(
+    open val rows: List<ServerDrivenComponent>,
+    open val direction: ListDirection = VERTICAL
 ) : ServerDrivenComponent, LayoutComponent {
     companion object
 }

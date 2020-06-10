@@ -41,7 +41,6 @@ import br.com.zup.beagle.widget.layout.Spacer
 import br.com.zup.beagle.widget.layout.Stack
 import br.com.zup.beagle.widget.layout.Vertical
 import br.com.zup.beagle.widget.lazy.LazyComponent
-import br.com.zup.beagle.android.widget.pager.PageIndicatorView
 import br.com.zup.beagle.widget.ui.Button
 import br.com.zup.beagle.widget.ui.Image
 import br.com.zup.beagle.widget.ui.ListView

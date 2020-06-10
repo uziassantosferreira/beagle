@@ -14,33 +14,34 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.engine.renderer.ui
+package br.com.zup.beagle.android.components
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.http.SslError
+import android.view.View
 import android.webkit.SslErrorHandler
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebViewClient
-import br.com.zup.beagle.android.engine.renderer.RootView
-import br.com.zup.beagle.android.engine.renderer.UIViewRenderer
 import br.com.zup.beagle.android.view.BeagleActivity
 import br.com.zup.beagle.android.view.ServerDrivenState
-import br.com.zup.beagle.android.view.ViewFactory
+import br.com.zup.beagle.android.widget.core.ViewConvertable
 import br.com.zup.beagle.widget.ui.WebView
 
-internal class WebViewRenderer(
-    override val component: WebView,
-    private val viewFactory: ViewFactory = ViewFactory()
-) : UIViewRenderer<WebView>() {
+data class WebView(override val url: String) : WebView(url), ViewConvertable {
 
-    override fun buildView(rootView: RootView) = viewFactory.makeWebView(rootView.getContext()).apply {
-        webViewClient = BeagleWebViewClient(rootView.getContext())
-        loadUrl(component.url)
+    override fun buildView(context: Context): View {
+        val webView = android.webkit.WebView(context)
+        webView.apply {
+            webViewClient = BeagleWebViewClient(context)
+            loadUrl(url)
+        }
+        return webView
     }
 
-    class BeagleWebViewClient(val context: Context): WebViewClient() {
+
+    class BeagleWebViewClient(val context: Context) : WebViewClient() {
 
         override fun onPageFinished(view: android.webkit.WebView?, url: String?) {
             notify(loading = false)

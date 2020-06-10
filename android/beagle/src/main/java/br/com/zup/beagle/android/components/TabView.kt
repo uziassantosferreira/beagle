@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.engine.renderer.ui
+package br.com.zup.beagle.android.components
 
 import android.content.Context
 import android.graphics.Color
@@ -26,42 +26,42 @@ import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import br.com.zup.beagle.R
-import br.com.zup.beagle.android.engine.renderer.RootView
-import br.com.zup.beagle.android.engine.renderer.UIViewRenderer
 import br.com.zup.beagle.android.setup.BeagleEnvironment
 import br.com.zup.beagle.android.utils.StyleManager
 import br.com.zup.beagle.android.utils.dp
 import br.com.zup.beagle.android.view.ViewFactory
+import br.com.zup.beagle.android.widget.core.ViewConvertable
+import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.widget.core.Flex
-import br.com.zup.beagle.widget.ui.TabItem
 import br.com.zup.beagle.widget.ui.TabView
 import com.google.android.material.tabs.TabLayout
 
 private val TABBAR_HEIGHT = 48.dp()
 internal var styleManagerFactory = StyleManager()
 
-internal class TabViewRenderer(
-    override val component: TabView,
-    private val viewFactory: ViewFactory = ViewFactory()
-) : UIViewRenderer<TabView>() {
+open class TabView(
+    override val tabItems: List<TabItem>,
+    override val style: String? = null
+) : TabView(tabItems, style), ViewConvertable {
 
-    override fun buildView(rootView: RootView): View {
+    private val viewFactory: ViewFactory = ViewFactory()
+
+    override fun buildView(context: Context): View {
         val containerFlex = Flex(grow = 1.0)
 
-        val container = viewFactory.makeBeagleFlexView(rootView.getContext(), containerFlex)
+        val container = viewFactory.makeBeagleFlexView(context, containerFlex)
 
-        val tabLayout = makeTabLayout(rootView.getContext())
+        val tabLayout = makeTabLayout(context)
 
-        val viewPager = viewFactory.makeViewPager(rootView.getContext()).apply {
+        val viewPager = viewFactory.makeViewPager(context).apply {
             adapter = ContentAdapter(
-                rootView = rootView,
                 viewFactory = viewFactory,
-                tabList = component.tabItems
+                tabList = tabItems
             )
         }
 
         val containerViewPager =
-            viewFactory.makeBeagleFlexView(rootView.getContext()).apply {
+            viewFactory.makeBeagleFlexView(context).apply {
                 addView(viewPager)
             }
 
@@ -70,6 +70,7 @@ internal class TabViewRenderer(
 
         container.addView(tabLayout)
         container.addView(containerViewPager)
+
         return container
     }
 
@@ -89,7 +90,7 @@ internal class TabViewRenderer(
     }
 
     private fun TabLayout.setData() {
-        val typedArray = styleManagerFactory.getTabBarTypedArray(context, component.style)
+        val typedArray = styleManagerFactory.getTabBarTypedArray(context, style)
         typedArray?.let {
             setTabTextColors(
                 it.getColor(R.styleable.BeagleTabBarStyle_tabTextColor, Color.BLACK),
@@ -108,10 +109,10 @@ internal class TabViewRenderer(
     }
 
     private fun TabLayout.addTabs(context: Context) {
-        for (i in component.tabItems.indices) {
+        for (i in tabItems.indices) {
             addTab(newTab().apply {
-                text = component.tabItems[i].title
-                component.tabItems[i].icon?.let {
+                text = tabItems[i].title
+                tabItems[i].icon?.let {
                     icon = getIconFromResources(context, it)
                 }
             })
@@ -157,8 +158,7 @@ internal class TabViewRenderer(
 
 internal class ContentAdapter(
     private val tabList: List<TabItem>,
-    private val viewFactory: ViewFactory,
-    private val rootView: RootView
+    private val viewFactory: ViewFactory
 ) : PagerAdapter() {
 
     override fun isViewFromObject(view: View, `object`: Any): Boolean = view === `object`
@@ -166,8 +166,8 @@ internal class ContentAdapter(
     override fun getCount(): Int = tabList.size
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
-        val view = viewFactory.makeBeagleFlexView(rootView.getContext()).also {
-            it.addServerDrivenComponent(tabList[position].content, rootView)
+        val view = viewFactory.makeBeagleFlexView(container.context).also {
+//            it.addServerDrivenComponent(tabList[position].content, rootView)
         }
         container.addView(view)
         return view

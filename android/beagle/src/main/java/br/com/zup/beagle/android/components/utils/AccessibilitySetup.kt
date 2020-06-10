@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.utils
+package br.com.zup.beagle.android.components.utils
 
 import android.view.View
 import br.com.zup.beagle.core.AccessibilityComponent

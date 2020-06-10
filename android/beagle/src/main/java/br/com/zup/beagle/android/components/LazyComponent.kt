@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.widget.lazy
+package br.com.zup.beagle.android.components
 
+import android.content.Context
+import android.view.View
+import androidx.core.view.get
+import br.com.zup.beagle.android.view.ViewFactory
+import br.com.zup.beagle.android.widget.core.ViewConvertable
 import br.com.zup.beagle.core.LayoutComponent
 import br.com.zup.beagle.core.ServerDrivenComponent
+import br.com.zup.beagle.widget.lazy.LazyComponent
 
 /**
  *  The LazyComponent is used when an asynchronous BFF request is made.
@@ -30,7 +36,16 @@ import br.com.zup.beagle.core.ServerDrivenComponent
  *                          request made is being fulfilled.
  *
  */
-open class LazyComponent(
-    open val path: String,
-    open val initialState: ServerDrivenComponent
-) : ServerDrivenComponent, LayoutComponent
+data class LazyComponent(
+    override val path: String,
+    override val initialState: ServerDrivenComponent
+) : LazyComponent(path, initialState), ViewConvertable {
+
+    private val viewFactory: ViewFactory = ViewFactory()
+    override fun buildView(context: Context): View {
+        return viewFactory.makeBeagleView(context).apply {
+//            addServerDrivenComponent(initialState, rootView)
+//            updateView(rootView, path, this[0])
+        }
+    }
+}
