@@ -16,13 +16,10 @@
 
 package br.com.zup.beagle.android.components
 
-import android.content.Context
 import android.view.View
-import br.com.zup.beagle.android.engine.renderer.ViewRendererFactory
 import br.com.zup.beagle.android.view.ViewFactory
+import br.com.zup.beagle.android.widget.core.RootView
 import br.com.zup.beagle.android.widget.core.ViewConvertable
-import br.com.zup.beagle.core.LayoutComponent
-import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.widget.core.Flex
 import br.com.zup.beagle.widget.core.Size
 import br.com.zup.beagle.widget.core.UnitType
@@ -33,9 +30,10 @@ data class Spacer(
     override val size: Double
 ) : Spacer(size), ViewConvertable {
 
+    @Transient
     private val viewFactory: ViewFactory = ViewFactory()
 
-    override fun buildView(context: Context): View {
+    override fun buildView(rootView: RootView): View {
         val flex = Flex(
             size = Size(
                 width = UnitValue(size, UnitType.REAL),
@@ -43,6 +41,6 @@ data class Spacer(
             )
         )
 
-        return viewFactory.makeBeagleFlexView(context, flex)
+        return viewFactory.makeBeagleFlexView(rootView.getContext(), flex)
     }
 }

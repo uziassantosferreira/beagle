@@ -16,13 +16,13 @@
 
 package br.com.zup.beagle.android.components
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.ImageView
 import br.com.zup.beagle.android.engine.mapper.ViewMapper
 import br.com.zup.beagle.android.components.utils.ComponentStylization
+import br.com.zup.beagle.android.widget.core.RootView
 import br.com.zup.beagle.android.widget.core.ViewConvertable
 import br.com.zup.beagle.widget.core.ImageContentMode
 import com.bumptech.glide.Glide
@@ -34,15 +34,18 @@ data class NetworkImage(
     override val contentMode: ImageContentMode? = null
 ) : br.com.zup.beagle.widget.ui.NetworkImage(path, contentMode), ViewConvertable {
 
+    @Transient
     private val componentStylization: ComponentStylization<NetworkImage> = ComponentStylization()
+
+    @Transient
     private val viewMapper: ViewMapper = ViewMapper()
 
-    override fun buildView(context: Context): View {
-        val imageView = ImageView(context)
+    override fun buildView(rootView: RootView): View {
+        val imageView = ImageView(rootView.getContext())
 
         if (flex?.size != null) {
             imageView.setData(this, viewMapper)
-            Glide.with(context).load(path).into(imageView)
+            Glide.with(rootView.getContext()).load(path).into(imageView)
         } else {
             loadImage(imageView)
         }

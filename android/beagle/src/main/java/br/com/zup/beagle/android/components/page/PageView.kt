@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.components
+package br.com.zup.beagle.android.components.page
 
-import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
-import br.com.zup.beagle.android.engine.renderer.RootView
+import br.com.zup.beagle.android.engine.renderer.ViewRendererFactory
 import br.com.zup.beagle.android.view.BeaglePageView
 import br.com.zup.beagle.android.view.ViewFactory
+import br.com.zup.beagle.android.widget.core.RootView
 import br.com.zup.beagle.android.widget.core.ViewConvertable
 import br.com.zup.beagle.android.widget.pager.PageIndicatorComponent
 import br.com.zup.beagle.core.ServerDrivenComponent
@@ -34,26 +34,30 @@ data class PageView(
     override val pageIndicator: PageIndicatorComponent? = null
 ) : PageView(pages, pageIndicator), ViewConvertable {
 
+    @Transient
     private val viewFactory: ViewFactory = ViewFactory()
 
-    override fun buildView(context: Context): View {
-        val container = viewFactory.makeBeagleFlexView(context)
+    @Transient
+    private val viewRendererFactory: ViewRendererFactory = ViewRendererFactory()
 
-        val viewPager = viewFactory.makeViewPager(context).apply {
-//            adapter = PageViewAdapter(rootView, pages, viewFactory)
+    override fun buildView(rootView: RootView): View {
+        val container = viewFactory.makeBeagleFlexView(rootView.getContext())
+
+        val viewPager = viewFactory.makeViewPager(rootView.getContext()).apply {
+            adapter = PageViewAdapter(rootView, pages, viewFactory)
         }
 
         // this container is needed because this view fill the parent completely
         val containerViewPager =
-            viewFactory.makeBeagleFlexView(context).apply {
+            viewFactory.makeBeagleFlexView(rootView.getContext()).apply {
                 addView(viewPager)
             }
         container.addView(containerViewPager)
 
         pageIndicator?.let {
-//            val pageIndicatorView = viewRendererFactory.make(it).build(rootView)
+            val pageIndicatorView = viewRendererFactory.make(it).build(rootView)
             setupPageIndicator(pages.size, viewPager, pageIndicator)
-//            container.addView(pageIndicatorView)
+            container.addView(pageIndicatorView)
         }
 
         return container

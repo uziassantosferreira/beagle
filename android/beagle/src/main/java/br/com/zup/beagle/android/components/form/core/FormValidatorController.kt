@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.form
+package br.com.zup.beagle.android.components.form.core
 
 import android.view.View
-import br.com.zup.beagle.android.engine.renderer.layout.FormInputValidator
 import br.com.zup.beagle.android.setup.BeagleEnvironment
 import br.com.zup.beagle.widget.form.FormInput
 import br.com.zup.beagle.widget.form.FormSubmit

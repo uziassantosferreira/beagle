@@ -14,20 +14,8 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.widget.form
+package br.com.zup.beagle.android.components.form.core
 
-import br.com.zup.beagle.core.ServerDrivenComponent
-
-/**
- * represents the  <input type="hidden"> in a form.
- * It lets you include data that cannot be seen or modified by users when a form is submitted.
- * This item is not rendered on screen.
- *
- * @param name define this form item name and the key to retrieve its value when submitted inside a form.
- * @param value contain the data you wish to transfer.
- *
- */
-open class FormInputHidden(
-    open val name: String,
-    open val value: String
-) : ServerDrivenComponent
+interface ValidatorHandler {
+    fun getValidator(name: String): Validator<Any, Any>?
+}

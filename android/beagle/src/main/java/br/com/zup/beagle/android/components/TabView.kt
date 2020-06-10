@@ -30,6 +30,7 @@ import br.com.zup.beagle.android.setup.BeagleEnvironment
 import br.com.zup.beagle.android.utils.StyleManager
 import br.com.zup.beagle.android.utils.dp
 import br.com.zup.beagle.android.view.ViewFactory
+import br.com.zup.beagle.android.widget.core.RootView
 import br.com.zup.beagle.android.widget.core.ViewConvertable
 import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.widget.core.Flex
@@ -44,24 +45,26 @@ open class TabView(
     override val style: String? = null
 ) : TabView(tabItems, style), ViewConvertable {
 
+    @Transient
     private val viewFactory: ViewFactory = ViewFactory()
 
-    override fun buildView(context: Context): View {
+    override fun buildView(rootView: RootView): View {
         val containerFlex = Flex(grow = 1.0)
 
-        val container = viewFactory.makeBeagleFlexView(context, containerFlex)
+        val container = viewFactory.makeBeagleFlexView(rootView.getContext(), containerFlex)
 
-        val tabLayout = makeTabLayout(context)
+        val tabLayout = makeTabLayout(rootView.getContext())
 
-        val viewPager = viewFactory.makeViewPager(context).apply {
+        val viewPager = viewFactory.makeViewPager(rootView.getContext()).apply {
             adapter = ContentAdapter(
                 viewFactory = viewFactory,
-                tabList = tabItems
+                tabList = tabItems,
+                rootView = rootView
             )
         }
 
         val containerViewPager =
-            viewFactory.makeBeagleFlexView(context).apply {
+            viewFactory.makeBeagleFlexView(rootView.getContext()).apply {
                 addView(viewPager)
             }
 
@@ -158,7 +161,8 @@ open class TabView(
 
 internal class ContentAdapter(
     private val tabList: List<TabItem>,
-    private val viewFactory: ViewFactory
+    private val viewFactory: ViewFactory,
+    private val rootView: RootView
 ) : PagerAdapter() {
 
     override fun isViewFromObject(view: View, `object`: Any): Boolean = view === `object`
@@ -167,7 +171,7 @@ internal class ContentAdapter(
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val view = viewFactory.makeBeagleFlexView(container.context).also {
-//            it.addServerDrivenComponent(tabList[position].content, rootView)
+            it.addServerDrivenComponent(tabList[position].content, rootView)
         }
         container.addView(view)
         return view

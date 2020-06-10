@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.form
+package br.com.zup.beagle.android.components.form.core
 
-interface Validator<in I, in W> {
-    fun isValid(input: I, widget: W): Boolean
+interface ValidationErrorListener {
+    fun onValidationError(message: String?)
 }
-

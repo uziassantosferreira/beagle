@@ -18,9 +18,6 @@ package br.com.zup.beagle.android.engine.renderer
 
 import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.android.engine.renderer.layout.ComposeComponentViewRenderer
-import br.com.zup.beagle.android.engine.renderer.layout.FormInputHiddenViewRenderer
-import br.com.zup.beagle.android.engine.renderer.layout.FormInputViewRenderer
-import br.com.zup.beagle.android.engine.renderer.layout.FormSubmitViewRenderer
 import br.com.zup.beagle.android.engine.renderer.ui.UndefinedViewRenderer
 import br.com.zup.beagle.android.engine.renderer.ui.ViewConvertableRenderer
 import br.com.zup.beagle.widget.core.ComposeComponent
@@ -36,9 +33,6 @@ internal class UIViewRendererFactory : AbstractViewRendererFactory {
             ComposeComponentViewRenderer(component)
         } else {
             when (component) {
-                is FormInput -> FormInputViewRenderer(component)
-                is FormInputHidden -> FormInputHiddenViewRenderer(component)
-                is FormSubmit -> FormSubmitViewRenderer(component)
                 is ViewConvertable, !is UndefinedWidget -> ViewConvertableRenderer(component as ViewConvertable)
                 else -> UndefinedViewRenderer(component)
             }

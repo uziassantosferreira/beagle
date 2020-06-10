@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.form
+package br.com.zup.beagle.android.widget.core
 
-interface ValidatorHandler {
-    fun getValidator(name: String): Validator<Any, Any>?
+import android.content.Context
+import androidx.lifecycle.LifecycleOwner
+
+interface RootView {
+    fun getContext(): Context
+    fun getLifecycleOwner(): LifecycleOwner
 }

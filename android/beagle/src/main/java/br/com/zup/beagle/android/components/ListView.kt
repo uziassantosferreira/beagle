@@ -16,12 +16,12 @@
 
 package br.com.zup.beagle.android.components
 
-import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import br.com.zup.beagle.android.view.ViewFactory
+import br.com.zup.beagle.android.widget.core.RootView
 import br.com.zup.beagle.android.widget.core.ViewConvertable
 import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.widget.ui.ListDirection
@@ -33,14 +33,15 @@ data class ListView(
     override val direction: ListDirection = VERTICAL
 ) : ListView(rows, direction), ViewConvertable {
 
+    @Transient
     private val viewFactory: ViewFactory = ViewFactory()
 
-    override fun buildView(context: Context): View {
-        val recyclerView = RecyclerView(context)
+    override fun buildView(rootView: RootView): View {
+        val recyclerView = RecyclerView(rootView.getContext())
         recyclerView.apply {
             val orientation = toRecyclerViewOrientation()
             layoutManager = LinearLayoutManager(context, orientation, false)
-            adapter = ListViewRecyclerAdapter(rows, viewFactory, orientation)
+            adapter = ListViewRecyclerAdapter(rows, viewFactory, orientation, rootView)
         }
 
         return recyclerView
@@ -57,21 +58,22 @@ data class ListView(
 internal class ListViewRecyclerAdapter(
     private val rows: List<ServerDrivenComponent>,
     private val viewFactory: ViewFactory,
-    private val orientation: Int
+    private val orientation: Int,
+    private val rootView: RootView
 ) : RecyclerView.Adapter<ViewHolder>() {
 
     override fun getItemViewType(position: Int): Int = position
 
     override fun onCreateViewHolder(parent: ViewGroup, position: Int): ViewHolder {
-/*        val view = viewFactory.makeBeagleFlexView(rootView.getContext()).also {
+        val view = viewFactory.makeBeagleFlexView(rootView.getContext()).also {
             val width = if (orientation == RecyclerView.VERTICAL)
                 ViewGroup.LayoutParams.MATCH_PARENT else
                 ViewGroup.LayoutParams.WRAP_CONTENT
             val layoutParams = ViewGroup.LayoutParams(width, ViewGroup.LayoutParams.WRAP_CONTENT)
             it.layoutParams = layoutParams
             it.addServerDrivenComponent(rows[position], rootView)
-        }*/
-        return ViewHolder(View(parent.context))
+        }
+        return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

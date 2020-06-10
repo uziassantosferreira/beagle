@@ -17,8 +17,6 @@
 package br.com.zup.beagle.android.engine.renderer
 
 import br.com.zup.beagle.android.engine.renderer.layout.ComposeComponentViewRenderer
-import br.com.zup.beagle.android.engine.renderer.layout.FormInputViewRenderer
-import br.com.zup.beagle.android.engine.renderer.layout.FormSubmitViewRenderer
 import br.com.zup.beagle.android.engine.renderer.ui.ButtonViewRenderer
 import br.com.zup.beagle.android.engine.renderer.ui.ImageViewRenderer
 import br.com.zup.beagle.android.engine.renderer.ui.ListViewRenderer

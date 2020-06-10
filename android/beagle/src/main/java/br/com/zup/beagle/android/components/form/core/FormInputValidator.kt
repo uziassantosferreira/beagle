@@ -14,20 +14,11 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.engine.renderer
+package br.com.zup.beagle.android.components.form.core
 
-import br.com.zup.beagle.core.ServerDrivenComponent
-import br.com.zup.beagle.android.engine.renderer.layout.FormViewRenderer
-import br.com.zup.beagle.widget.form.Form
+import br.com.zup.beagle.widget.form.FormInput
 
-internal class LayoutViewRendererFactory : AbstractViewRendererFactory {
-
-    @Throws(IllegalArgumentException::class)
-    override fun make(component: ServerDrivenComponent): ViewRenderer<*> {
-
-        return when (component) {
-            is Form -> FormViewRenderer(component)
-            else -> throw IllegalArgumentException("$component is not a Layout Widget.")
-        }
-    }
-}
+data class FormInputValidator(
+    val formInput: FormInput,
+    var isValid: Boolean
+)

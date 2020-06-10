@@ -19,15 +19,15 @@ package br.com.zup.beagle.android.utils
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import br.com.zup.beagle.android.components.layout.Container
 import br.com.zup.beagle.android.components.layout.Screen
-import br.com.zup.beagle.core.Appearance
-import br.com.zup.beagle.core.LayoutComponent
-import br.com.zup.beagle.core.ServerDrivenComponent
+import br.com.zup.beagle.android.components.layout.ScreenComponent
 import br.com.zup.beagle.android.engine.renderer.ActivityRootView
 import br.com.zup.beagle.android.engine.renderer.FragmentRootView
-import br.com.zup.beagle.android.engine.renderer.RootView
 import br.com.zup.beagle.android.engine.renderer.ViewRendererFactory
-import br.com.zup.beagle.widget.layout.Container
+import br.com.zup.beagle.android.widget.core.RootView
+import br.com.zup.beagle.core.LayoutComponent
+import br.com.zup.beagle.core.ServerDrivenComponent
 
 internal var viewRenderer = ViewRendererFactory()
 
@@ -38,9 +38,17 @@ fun ServerDrivenComponent.toView(activity: AppCompatActivity) =
 
 fun ServerDrivenComponent.toView(fragment: Fragment) = this.toView(FragmentRootView(fragment))
 
-fun Screen.toView(activity: AppCompatActivity) = this.toView(ActivityRootView(activity))
+fun Screen.toView(activity: AppCompatActivity) = this.toComponent().toView(activity)
 
-fun Screen.toView(fragment: Fragment) = this.toView(FragmentRootView(fragment))
+fun Screen.toView(fragment: Fragment) = this.toComponent().toView(fragment)
+
+internal fun Screen.toComponent() = ScreenComponent(
+    identifier = this.identifier,
+    navigationBar = this.navigationBar,
+    child = this.child,
+    screenAnalyticsEvent = screenAnalyticsEvent,
+    appearance = appearance
+)
 
 internal fun ServerDrivenComponent.toView(rootView: RootView) =
     if (this is LayoutComponent) {
@@ -51,7 +59,7 @@ internal fun ServerDrivenComponent.toView(rootView: RootView) =
     }
 
 internal fun br.com.zup.beagle.widget.layout.Screen.toAndroidScreen() = Screen(
-    id = this.id,
+    identifier = this.identifier,
     navigationBar = this.navigationBar,
     child = this.child,
     screenAnalyticsEvent = this.screenAnalyticsEvent,

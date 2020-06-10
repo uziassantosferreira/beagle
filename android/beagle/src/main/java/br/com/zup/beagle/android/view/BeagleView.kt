@@ -22,9 +22,9 @@ import androidx.lifecycle.Observer
 import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.android.data.BeagleViewModel
 import br.com.zup.beagle.android.data.ViewState
-import br.com.zup.beagle.android.engine.renderer.RootView
 import br.com.zup.beagle.android.interfaces.OnStateUpdatable
 import br.com.zup.beagle.android.utils.implementsGenericTypeOf
+import br.com.zup.beagle.android.widget.core.RootView
 
 typealias OnStateChanged = (state: BeagleViewState) -> Unit
 

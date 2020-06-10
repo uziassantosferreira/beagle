@@ -26,7 +26,6 @@ import androidx.fragment.app.FragmentActivity
 import br.com.zup.beagle.action.Route
 import br.com.zup.beagle.android.logger.BeagleLogger
 import br.com.zup.beagle.android.setup.BeagleEnvironment
-import br.com.zup.beagle.android.utils.toAndroidScreen
 import java.lang.Exception
 
 internal object BeagleNavigator {
@@ -60,8 +59,8 @@ internal object BeagleNavigator {
     fun pushView(context: Context, route: Route) {
         if (context is BeagleActivity) {
             when (route) {
-                is Route.Remote -> context.navigateTo(ScreenRequest(route.route), route.fallback?.toAndroidScreen())
-                is Route.Local -> context.navigateTo(ScreenRequest(""), route.screen.toAndroidScreen())
+                is Route.Remote -> context.navigateTo(ScreenRequest(route.route), route.fallback)
+                is Route.Local -> context.navigateTo(ScreenRequest(""), route.screen)
             }
         } else {
             context.startActivity(generateIntent(context, route))
@@ -101,8 +100,8 @@ internal object BeagleNavigator {
 
     private fun generateIntent(context: Context, route: Route): Intent {
         return when (route) {
-            is Route.Remote -> BeagleActivity.newIntent(context, ScreenRequest(route.route), route.fallback?.toAndroidScreen())
-            is Route.Local -> BeagleActivity.newIntent(context, ScreenRequest(""), route.screen.toAndroidScreen())
+            is Route.Remote -> BeagleActivity.newIntent(context, ScreenRequest(route.route), null, route.fallback)
+            is Route.Local -> BeagleActivity.newIntent(context, ScreenRequest(""), null, route.screen)
         }
     }
 }

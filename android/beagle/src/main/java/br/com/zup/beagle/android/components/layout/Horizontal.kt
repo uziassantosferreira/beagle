@@ -16,10 +16,10 @@
 
 package br.com.zup.beagle.android.components.layout
 
-import android.content.Context
 import android.view.View
 import br.com.zup.beagle.android.view.BeagleFlexView
 import br.com.zup.beagle.android.view.ViewFactory
+import br.com.zup.beagle.android.widget.core.RootView
 import br.com.zup.beagle.android.widget.core.ViewConvertable
 import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.widget.core.Flex
@@ -31,13 +31,14 @@ data class Horizontal(
     override val reversed: Boolean? = null
 ) : Horizontal(children, reversed), ViewConvertable {
 
+    @Transient
     private val viewFactory = ViewFactory()
 
-    override fun buildView(context: Context): View {
-        return viewFactory.makeBeagleFlexView(context,
+    override fun buildView(rootView: RootView): View {
+        return viewFactory.makeBeagleFlexView(rootView.getContext(),
             Flex(flexDirection = getYogaFlexDirection()))
             .apply {
-                addChildren(this)
+                addChildren(this, rootView)
             }
     }
 
@@ -49,9 +50,9 @@ data class Horizontal(
         }
     }
 
-    private fun addChildren(beagleFlexView: BeagleFlexView) {
+    private fun addChildren(beagleFlexView: BeagleFlexView, rootView: RootView) {
         children.forEach { child ->
-//            beagleFlexView.addServerDrivenComponent(child, rootView)
+            beagleFlexView.addServerDrivenComponent(child, rootView)
         }
     }
 }

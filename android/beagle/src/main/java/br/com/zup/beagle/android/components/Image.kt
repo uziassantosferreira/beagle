@@ -16,11 +16,11 @@
 
 package br.com.zup.beagle.android.components
 
-import android.content.Context
 import android.view.View
 import android.widget.ImageView
 import br.com.zup.beagle.android.engine.mapper.ViewMapper
 import br.com.zup.beagle.android.setup.BeagleEnvironment
+import br.com.zup.beagle.android.widget.core.RootView
 import br.com.zup.beagle.android.widget.core.ViewConvertable
 import br.com.zup.beagle.widget.core.ImageContentMode
 import br.com.zup.beagle.widget.ui.Image
@@ -29,10 +29,11 @@ data class Image(override val name: String,
                  override val contentMode: ImageContentMode? = null /* = ImageContentMode.FIT_CENTER */)
     : br.com.zup.beagle.widget.ui.Image(name, contentMode), ViewConvertable {
 
+    @Transient
     private val viewMapper: ViewMapper = ViewMapper()
 
-    override fun buildView(context: Context): View {
-        val imageView = ImageView(context)
+    override fun buildView(rootView: RootView): View {
+        val imageView = ImageView(rootView.getContext())
         imageView.setData(this, viewMapper)
         return imageView
     }

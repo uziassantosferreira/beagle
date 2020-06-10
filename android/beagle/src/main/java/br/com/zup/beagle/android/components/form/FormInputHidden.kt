@@ -14,28 +14,29 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.engine.renderer.layout
+package br.com.zup.beagle.android.components.form
 
 import android.view.View
-import br.com.zup.beagle.android.engine.renderer.LayoutViewRenderer
-import br.com.zup.beagle.android.engine.renderer.RootView
-import br.com.zup.beagle.android.engine.renderer.ViewRendererFactory
 import br.com.zup.beagle.android.view.ViewFactory
+import br.com.zup.beagle.android.widget.core.RootView
+import br.com.zup.beagle.android.widget.core.ViewConvertable
 import br.com.zup.beagle.widget.core.Flex
 import br.com.zup.beagle.widget.core.FlexPositionType
 import br.com.zup.beagle.widget.form.FormInputHidden
 
-internal class FormInputHiddenViewRenderer(
-    override val component: FormInputHidden,
-    viewRendererFactory: ViewRendererFactory = ViewRendererFactory(),
-    viewFactory: ViewFactory = ViewFactory()
-) : LayoutViewRenderer<FormInputHidden>(viewRendererFactory, viewFactory) {
+
+data class FormInputHidden(
+    override val name: String,
+    override val value: String
+) : FormInputHidden(name, value), ViewConvertable {
+
+    @Transient
+    private val viewFactory: ViewFactory = ViewFactory()
 
     override fun buildView(rootView: RootView): View {
-
         return viewFactory.makeBeagleFlexView(rootView.getContext(),
             flex = Flex(positionType = FlexPositionType.ABSOLUTE)).apply {
-            tag = component
+            tag = this@FormInputHidden
             visibility = View.GONE
         }
     }

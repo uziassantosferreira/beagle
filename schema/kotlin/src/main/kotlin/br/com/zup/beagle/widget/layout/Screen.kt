@@ -21,9 +21,7 @@ import br.com.zup.beagle.analytics.ScreenAnalytics
 import br.com.zup.beagle.analytics.ScreenEvent
 import br.com.zup.beagle.core.Accessibility
 import br.com.zup.beagle.core.Appearance
-import br.com.zup.beagle.core.AppearanceComponent
 import br.com.zup.beagle.core.IdentifierComponent
-import br.com.zup.beagle.core.LayoutComponent
 import br.com.zup.beagle.core.ServerDrivenComponent
 
 /**
@@ -114,12 +112,10 @@ data class NavigationBar(
  *
  */
 open class Screen(
-    open override var id: String? = null,
+    open val identifier: String? = null,
     open val safeArea: SafeArea? = null,
     open val navigationBar: NavigationBar? = null,
     open val child: ServerDrivenComponent,
-    open override var appearance: Appearance? = null,
-    open override val screenAnalyticsEvent: ScreenEvent? = null
-) : ScreenAnalytics, ServerDrivenComponent,
-    LayoutComponent, AppearanceComponent,
-    IdentifierComponent
+    open val appearance: Appearance? = null,
+    override val screenAnalyticsEvent: ScreenEvent? = null
+) : ScreenAnalytics

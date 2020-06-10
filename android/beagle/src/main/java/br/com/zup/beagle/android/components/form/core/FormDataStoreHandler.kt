@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.engine.renderer.layout
+package br.com.zup.beagle.android.components.form.core
 
 class FormDataStoreHandler {
     private val groups: HashMap<String, HashMap<String, String>> = HashMap()

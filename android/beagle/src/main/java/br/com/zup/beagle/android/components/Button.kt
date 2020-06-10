@@ -16,7 +16,6 @@
 
 package br.com.zup.beagle.android.components
 
-import android.content.Context
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.widget.AppCompatButton
@@ -27,8 +26,10 @@ import br.com.zup.beagle.analytics.ClickEvent
 import br.com.zup.beagle.android.action.ActionExecutor
 import br.com.zup.beagle.android.data.PreFetchHelper
 import br.com.zup.beagle.android.setup.BeagleEnvironment
+import br.com.zup.beagle.android.widget.core.RootView
 
 import br.com.zup.beagle.android.widget.core.ViewConvertable
+import br.com.zup.beagle.annotation.RegisterWidget
 
 data class Button(override val text: String,
                   override val style: String? = null,
@@ -36,17 +37,20 @@ data class Button(override val text: String,
                   override val clickAnalyticsEvent: ClickEvent? = null)
     : br.com.zup.beagle.widget.ui.Button(text, style, action, clickAnalyticsEvent), ViewConvertable {
 
+    @Transient
     private val actionExecutor: ActionExecutor = ActionExecutor()
+
+    @Transient
     private val preFetchHelper: PreFetchHelper = PreFetchHelper()
 
-    override fun buildView(context: Context): View {
+    override fun buildView(rootView: RootView): View {
         action?.let {
-//            preFetchHelper.handlePreFetch(rootView, it)
+            preFetchHelper.handlePreFetch(rootView, it)
         }
-        val button = AppCompatButton(context)
+        val button = AppCompatButton(rootView.getContext())
 
         button.setOnClickListener {
-            actionExecutor.doAction(context, action)
+            actionExecutor.doAction(rootView.getContext(), action)
             clickAnalyticsEvent?.let {
                 BeagleEnvironment.beagleSdk.analytics?.sendClickEvent(it)
             }

@@ -16,13 +16,13 @@
 
 package br.com.zup.beagle.android.components
 
-import android.content.Context
 import android.view.Gravity
 import android.view.View
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.widget.TextViewCompat
 import br.com.zup.beagle.android.setup.BeagleEnvironment
 import br.com.zup.beagle.android.utils.toAndroidColor
+import br.com.zup.beagle.android.widget.core.RootView
 import br.com.zup.beagle.android.widget.core.ViewConvertable
 import br.com.zup.beagle.widget.ui.Text
 import br.com.zup.beagle.widget.ui.TextAlignment
@@ -34,8 +34,8 @@ data class Text(override val text: String,
     : br.com.zup.beagle.widget.ui.Text(text, style, textColor, alignment), ViewConvertable {
 
 
-    override fun buildView(context: Context): View {
-        val textView = AppCompatTextView(context)
+    override fun buildView(rootView: RootView): View {
+        val textView = AppCompatTextView(rootView.getContext())
         textView.setTextWidget(this)
         return textView
     }

@@ -14,24 +14,27 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.engine.renderer.layout
+package br.com.zup.beagle.android.components.form
 
 import android.view.View
-import br.com.zup.beagle.android.engine.renderer.LayoutViewRenderer
-import br.com.zup.beagle.android.engine.renderer.RootView
 import br.com.zup.beagle.android.engine.renderer.ViewRendererFactory
-import br.com.zup.beagle.android.view.ViewFactory
+import br.com.zup.beagle.android.widget.core.RootView
+import br.com.zup.beagle.android.widget.core.ViewConvertable
+import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.widget.form.FormSubmit
 
-internal class FormSubmitViewRenderer(
-    override val component: FormSubmit,
-    viewRendererFactory: ViewRendererFactory = ViewRendererFactory(),
-    viewFactory: ViewFactory = ViewFactory()
-) : LayoutViewRenderer<FormSubmit>(viewRendererFactory, viewFactory) {
+
+data class FormSubmit(
+    override val child: ServerDrivenComponent,
+    override val enabled: Boolean = true
+) : FormSubmit(child, enabled), ViewConvertable {
+
+    @Transient
+    private val viewRendererFactory: ViewRendererFactory = ViewRendererFactory()
 
     override fun buildView(rootView: RootView): View {
-        return viewRendererFactory.make(component.child).build(rootView).apply {
-            tag = component
+        return viewRendererFactory.make(child).build(rootView).apply {
+            tag = this@FormSubmit
         }
     }
 }

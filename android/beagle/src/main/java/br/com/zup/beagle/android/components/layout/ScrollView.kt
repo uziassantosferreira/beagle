@@ -16,14 +16,11 @@
 
 package br.com.zup.beagle.android.components.layout
 
-import android.content.Context
 import android.view.View
 import android.view.ViewGroup
-import br.com.zup.beagle.android.engine.renderer.RootView
-import br.com.zup.beagle.android.engine.renderer.ViewRendererFactory
 import br.com.zup.beagle.android.view.ViewFactory
+import br.com.zup.beagle.android.widget.core.RootView
 import br.com.zup.beagle.android.widget.core.ViewConvertable
-import br.com.zup.beagle.core.LayoutComponent
 import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.widget.core.Flex
 import br.com.zup.beagle.widget.core.FlexDirection
@@ -44,9 +41,10 @@ data class ScrollView(
     override val scrollBarEnabled: Boolean? = null
 ) : ScrollView(children, scrollDirection, scrollBarEnabled), ViewConvertable {
 
+    @Transient
     private val viewFactory: ViewFactory = ViewFactory()
 
-    override fun buildView(context: Context): View {
+    override fun buildView(rootView: RootView): View {
         val scrollDirection = scrollDirection ?: ScrollAxis.VERTICAL
         val scrollBarEnabled = scrollBarEnabled ?: true
 
@@ -59,16 +57,16 @@ data class ScrollView(
         val flexChild = Flex(flexDirection = flexDirection)
         val flexParent = Flex(grow = 1.0)
 
-        return viewFactory.makeBeagleFlexView(context, flexParent).apply {
+        return viewFactory.makeBeagleFlexView(rootView.getContext(), flexParent).apply {
             addView(if (scrollDirection == ScrollAxis.HORIZONTAL) {
                 viewFactory.makeHorizontalScrollView(context).apply {
                     isHorizontalScrollBarEnabled = scrollBarEnabled
-//                    addChildrenViews(this, children, rootView, flexChild)
+                    addChildrenViews(this, children, rootView, flexChild)
                 }
             } else {
                 viewFactory.makeScrollView(context).apply {
                     isVerticalScrollBarEnabled = scrollBarEnabled
-//                    addChildrenViews(this, children, rootView, flexChild)
+                    addChildrenViews(this, children, rootView, flexChild)
                 }
             }, flexParent)
         }

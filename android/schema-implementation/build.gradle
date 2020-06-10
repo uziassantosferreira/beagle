@@ -36,6 +36,9 @@ android {
 dependencies {
     implementation GeneralLibraries.kotlin
     implementation project(Modules.beagleSchemaKotlin)
+    implementation AndroidxLibraries.viewModel
+    implementation AndroidxLibraries.viewModelExtensions
+
 }
 
 apply from: rootProject.file('maven-publish.gradle')

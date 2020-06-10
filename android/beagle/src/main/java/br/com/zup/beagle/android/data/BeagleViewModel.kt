@@ -19,7 +19,7 @@ package br.com.zup.beagle.android.data
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import br.com.zup.beagle.action.Action
-import br.com.zup.beagle.android.components.layout.Screen
+import br.com.zup.beagle.android.components.layout.ScreenComponent
 import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.android.exception.BeagleException
 import br.com.zup.beagle.android.logger.BeagleLogger
@@ -51,7 +51,7 @@ internal class BeagleViewModel(
     val state = MutableLiveData<ViewState>()
     private val urlObservableReference = AtomicReference(UrlObservable())
 
-    fun fetchComponent(screenRequest: ScreenRequest, screen: Screen? = null) = launch {
+    fun fetchComponent(screenRequest: ScreenRequest, screen: ScreenComponent? = null) = launch {
         if (screenRequest.url.isNotEmpty()) {
             try {
                 if (hasFetchInProgress(screenRequest.url)) {
@@ -63,7 +63,7 @@ internal class BeagleViewModel(
                 }
             } catch (exception: BeagleException) {
                 if (screen != null) {
-                    state.value = ViewState.DoRender(screen.id, screen)
+                    state.value = ViewState.DoRender(screen.identifier, screen)
                 } else {
                     state.value = ViewState.Error(exception)
                 }
@@ -71,7 +71,7 @@ internal class BeagleViewModel(
             setLoading(screenRequest.url, false)
         } else if (screen != null) {
             withContext(CoroutineDispatchers.Default) {
-                state.postValue(ViewState.DoRender(screen.id, screen))
+                state.postValue(ViewState.DoRender(screen.identifier, screen))
             }
         }
     }

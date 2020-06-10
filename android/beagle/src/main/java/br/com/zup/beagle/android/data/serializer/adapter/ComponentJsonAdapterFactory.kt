@@ -16,19 +16,37 @@
 
 package br.com.zup.beagle.android.data.serializer.adapter
 
-import br.com.zup.beagle.android.components.layout.Screen
+import br.com.zup.beagle.android.components.Button
+import br.com.zup.beagle.android.components.Image
+import br.com.zup.beagle.android.components.LazyComponent
+import br.com.zup.beagle.android.components.ListView
+import br.com.zup.beagle.android.components.NetworkImage
+import br.com.zup.beagle.android.components.Spacer
+import br.com.zup.beagle.android.components.TabItem
+import br.com.zup.beagle.android.components.TabView
+import br.com.zup.beagle.android.components.Text
+import br.com.zup.beagle.android.components.Touchable
+import br.com.zup.beagle.android.components.WebView
+import br.com.zup.beagle.android.components.form.Form
+import br.com.zup.beagle.android.components.form.FormInput
+import br.com.zup.beagle.android.components.form.FormInputHidden
+import br.com.zup.beagle.android.components.form.FormSubmit
+import br.com.zup.beagle.android.components.layout.Container
+import br.com.zup.beagle.android.components.layout.Horizontal
+import br.com.zup.beagle.android.components.layout.ScreenComponent
+import br.com.zup.beagle.android.components.layout.ScrollView
+import br.com.zup.beagle.android.components.layout.Stack
+import br.com.zup.beagle.android.components.layout.Vertical
+import br.com.zup.beagle.android.components.page.PageIndicator
+import br.com.zup.beagle.android.components.page.PageView
 import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.android.data.serializer.PolymorphicJsonAdapterFactory
 import br.com.zup.beagle.android.setup.BeagleEnvironment
-import br.com.zup.beagle.widget.Widget
-import br.com.zup.beagle.widget.form.Form
-import br.com.zup.beagle.widget.form.FormInput
-import br.com.zup.beagle.widget.form.FormInputHidden
-import br.com.zup.beagle.widget.form.FormSubmit
-import br.com.zup.beagle.widget.form.InputWidget
-import br.com.zup.beagle.widget.pager.PageIndicatorComponent
+import br.com.zup.beagle.android.widget.form.InputWidget
+import br.com.zup.beagle.android.widget.pager.PageIndicatorComponent
 import br.com.zup.beagle.android.widget.ui.UndefinedWidget
-import java.util.*
+import br.com.zup.beagle.widget.Widget
+import java.util.Locale
 
 private const val BEAGLE_WIDGET_TYPE = "_beagleComponent_"
 private const val BEAGLE_NAMESPACE = "beagle"
@@ -60,49 +78,32 @@ internal object ComponentJsonAdapterFactory {
     private fun registerLayoutClass(
         factory: PolymorphicJsonAdapterFactory<ServerDrivenComponent>
     ): PolymorphicJsonAdapterFactory<ServerDrivenComponent> {
-        return factory.withSubtype(Screen::class.java, createNamespaceFor<Screen>())
-            .withSubtype(br.com.zup.beagle.android.components.layout.Container::class.java,
-                createNamespaceFor<br.com.zup.beagle.android.components.layout.Container>())
-            .withSubtype(br.com.zup.beagle.android.components.layout.Vertical::class.java,
-                createNamespaceFor<br.com.zup.beagle.android.components.layout.Vertical>())
-            .withSubtype(br.com.zup.beagle.android.components.layout.Horizontal::class.java,
-                createNamespaceFor<br.com.zup.beagle.android.components.layout.Horizontal>())
-            .withSubtype(br.com.zup.beagle.android.components.layout.Stack::class.java,
-                createNamespaceFor<br.com.zup.beagle.android.components.layout.Stack>())
-            .withSubtype(br.com.zup.beagle.android.components.Spacer::class.java,
-                createNamespaceFor<br.com.zup.beagle.android.components.Spacer>())
-            .withSubtype(br.com.zup.beagle.android.components.layout.ScrollView::class.java,
-                createNamespaceFor<br.com.zup.beagle.android.components.layout.ScrollView>())
-            .withSubtype(br.com.zup.beagle.android.components.LazyComponent::class.java,
-                createNamespaceFor<br.com.zup.beagle.android.components.LazyComponent>())
-            .withSubtype(br.com.zup.beagle.android.components.PageView::class.java,
-                createNamespaceFor<br.com.zup.beagle.android.components.PageView>())
+        return factory.withSubtype(ScreenComponent::class.java, createNamespaceFor<ScreenComponent>())
+            .withSubtype(Container::class.java, createNamespaceFor<Container>())
+            .withSubtype(Vertical::class.java, createNamespaceFor<Vertical>())
+            .withSubtype(Horizontal::class.java, createNamespaceFor<Horizontal>())
+            .withSubtype(Stack::class.java, createNamespaceFor<Stack>())
+            .withSubtype(Spacer::class.java, createNamespaceFor<Spacer>())
+            .withSubtype(ScrollView::class.java, createNamespaceFor<ScrollView>())
+            .withSubtype(LazyComponent::class.java, createNamespaceFor<LazyComponent>())
+            .withSubtype(PageView::class.java, createNamespaceFor<PageView>())
             .withSubtype(Form::class.java, createNamespaceFor<Form>())
     }
 
     private fun registerUIClass(
         factory: PolymorphicJsonAdapterFactory<ServerDrivenComponent>
     ): PolymorphicJsonAdapterFactory<ServerDrivenComponent> {
-        return factory.withSubtype(br.com.zup.beagle.android.components.Text::class.java,
-            createNamespaceFor<br.com.zup.beagle.android.components.Text>())
-            .withSubtype(br.com.zup.beagle.android.components.Image::class.java,
-                createNamespaceFor<br.com.zup.beagle.android.components.Image>())
-            .withSubtype(br.com.zup.beagle.android.components.NetworkImage::class.java,
-                createNamespaceFor<br.com.zup.beagle.android.components.NetworkImage>())
-            .withSubtype(br.com.zup.beagle.android.components.Button::class.java,
-                createNamespaceFor<br.com.zup.beagle.android.components.Button>())
-            .withSubtype(br.com.zup.beagle.android.components.ListView::class.java,
-                createNamespaceFor<br.com.zup.beagle.android.components.ListView>())
-            .withSubtype(br.com.zup.beagle.android.components.TabView::class.java,
-                createNamespaceFor<br.com.zup.beagle.android.components.TabView>())
-            .withSubtype(br.com.zup.beagle.android.components.TabItem::class.java,
-                createNamespaceFor<br.com.zup.beagle.android.components.TabItem>())
-            .withSubtype(br.com.zup.beagle.android.components.WebView::class.java,
-                createNamespaceFor<br.com.zup.beagle.android.components.WebView>())
-            .withSubtype(br.com.zup.beagle.android.components.Touchable::class.java,
-                createNamespaceFor<br.com.zup.beagle.android.components.Touchable>())
-            .withSubtype(br.com.zup.beagle.android.components.PageIndicator::class.java,
-                createNamespaceFor<br.com.zup.beagle.android.components.PageIndicator>())
+        return factory.withSubtype(Text::class.java,
+            createNamespaceFor<Text>())
+            .withSubtype(Image::class.java, createNamespaceFor<Image>())
+            .withSubtype(NetworkImage::class.java, createNamespaceFor<NetworkImage>())
+            .withSubtype(Button::class.java, createNamespaceFor<Button>())
+            .withSubtype(ListView::class.java, createNamespaceFor<ListView>())
+            .withSubtype(TabView::class.java, createNamespaceFor<TabView>())
+            .withSubtype(TabItem::class.java, createNamespaceFor<TabItem>())
+            .withSubtype(WebView::class.java, createNamespaceFor<WebView>())
+            .withSubtype(Touchable::class.java, createNamespaceFor<Touchable>())
+            .withSubtype(PageIndicator::class.java, createNamespaceFor<PageIndicator>())
             .withSubtype(FormInput::class.java, createNamespaceFor<FormInput>())
             .withSubtype(FormInputHidden::class.java, createNamespaceFor<FormInputHidden>())
             .withSubtype(FormSubmit::class.java, createNamespaceFor<FormSubmit>())

@@ -14,24 +14,29 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.engine.renderer.layout
+package br.com.zup.beagle.android.components.form
 
 import android.view.View
-import br.com.zup.beagle.android.engine.renderer.LayoutViewRenderer
-import br.com.zup.beagle.android.engine.renderer.RootView
 import br.com.zup.beagle.android.engine.renderer.ViewRendererFactory
-import br.com.zup.beagle.android.view.ViewFactory
+import br.com.zup.beagle.android.widget.core.RootView
+import br.com.zup.beagle.android.widget.core.ViewConvertable
+import br.com.zup.beagle.android.widget.form.InputWidget
 import br.com.zup.beagle.widget.form.FormInput
 
-internal class FormInputViewRenderer(
-    override val component: FormInput,
-    viewRendererFactory: ViewRendererFactory = ViewRendererFactory(),
-    viewFactory: ViewFactory = ViewFactory()
-) : LayoutViewRenderer<FormInput>(viewRendererFactory, viewFactory) {
+data class FormInput(
+    override val name: String,
+    override val required: Boolean? = null,
+    override val validator: String? = null,
+    override val errorMessage: String? = null,
+    override val child: InputWidget
+) : FormInput(name, required, validator, errorMessage, child), ViewConvertable {
+
+    @Transient
+    private val viewRendererFactory: ViewRendererFactory = ViewRendererFactory()
 
     override fun buildView(rootView: RootView): View {
-        return viewRendererFactory.make(component.child).build(rootView).apply {
-            tag = component
+        return viewRendererFactory.make(child).build(rootView).apply {
+            tag = this@FormInput
         }
     }
 }

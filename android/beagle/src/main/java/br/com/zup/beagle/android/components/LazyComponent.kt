@@ -16,36 +16,26 @@
 
 package br.com.zup.beagle.android.components
 
-import android.content.Context
 import android.view.View
 import androidx.core.view.get
 import br.com.zup.beagle.android.view.ViewFactory
+import br.com.zup.beagle.android.widget.core.RootView
 import br.com.zup.beagle.android.widget.core.ViewConvertable
-import br.com.zup.beagle.core.LayoutComponent
 import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.widget.lazy.LazyComponent
 
-/**
- *  The LazyComponent is used when an asynchronous BFF request is made.
- *  An initialState view is set on this component.
- *  It works like a loading component or a default picture that is set until the request is fulfilled.
- *
- * @param path The URL to make the request.
- * @param initialState
- *                          define a ServerDrivenComponent that is set to be on view while the asynchronous
- *                          request made is being fulfilled.
- *
- */
 data class LazyComponent(
     override val path: String,
     override val initialState: ServerDrivenComponent
 ) : LazyComponent(path, initialState), ViewConvertable {
 
+    @Transient
     private val viewFactory: ViewFactory = ViewFactory()
-    override fun buildView(context: Context): View {
-        return viewFactory.makeBeagleView(context).apply {
-//            addServerDrivenComponent(initialState, rootView)
-//            updateView(rootView, path, this[0])
+
+    override fun buildView(rootView: RootView): View {
+        return viewFactory.makeBeagleView(rootView.getContext()).apply {
+            addServerDrivenComponent(initialState, rootView)
+            updateView(rootView, path, this[0])
         }
     }
 }

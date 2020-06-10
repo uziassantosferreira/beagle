@@ -16,9 +16,9 @@
 
 package br.com.zup.beagle.android.components
 
-import android.content.Context
 import android.view.View
 import br.com.zup.beagle.android.view.ViewFactory
+import br.com.zup.beagle.android.widget.core.RootView
 import br.com.zup.beagle.android.widget.core.ViewConvertable
 import br.com.zup.beagle.core.ServerDrivenComponent
 
@@ -28,14 +28,12 @@ data class TabItem(
     override val icon: String? = null
 ) : br.com.zup.beagle.widget.ui.TabItem(title, content, icon), ViewConvertable {
 
-
+    @Transient
     private val viewFactory: ViewFactory = ViewFactory()
 
-
-    override fun buildView(context: Context): View {
-        val view = viewFactory.makeBeagleFlexView(context).also {
-//            it.addServerDrivenComponent(content, rootView = )
+    override fun buildView(rootView: RootView): View {
+        return viewFactory.makeBeagleFlexView(rootView.getContext()).also {
+            it.addServerDrivenComponent(content, rootView)
         }
-        return view
     }
 }
