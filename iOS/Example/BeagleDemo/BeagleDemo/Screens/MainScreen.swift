@@ -28,7 +28,7 @@ struct MainScreen: DeeplinkScreen {
             child: buildChild()
         )
 
-        return BeagleScreenViewController(screen: screen)
+        return BeagleScreenViewController(.declarative(screen))
     }
     
     private func buildChild() -> ScrollView {

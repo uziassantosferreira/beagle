@@ -1,3 +1,4 @@
+//
 /*
  * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
@@ -14,16 +15,26 @@
  * limitations under the License.
  */
 
-import Foundation
+import XCTest
+import BeagleSchema
+@testable import BeagleUI
 
-/// Markup to define an action to be triggred in response to some event
-public protocol Action: Decodable {}
+final class ShowNativeDialogTests: XCTestCase {
 
-/// Defines a representation of an unknwon Action
-public struct UnknownAction: Action {
-    public let type: String
-    
-    public init(type: String) {
-        self.type = type
+    func test_whenShowNativeDialog_shouldPresentAlertController() {
+        // Given
+        let action = ShowNativeDialog(
+            title: "Title",
+            message: "Message",
+            buttonText: "Button"
+        )
+
+        let controller = BeagleControllerNavigationSpy()
+
+        // When
+        action.execute(controller: controller, sender: self)
+
+        // Then
+        XCTAssertTrue(controller.viewControllerToPresent is UIAlertController)
     }
 }
