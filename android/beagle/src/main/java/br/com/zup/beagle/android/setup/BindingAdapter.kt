@@ -16,7 +16,7 @@
 
 package br.com.zup.beagle.android.setup
 
-import br.com.zup.beagle.android.widget.core.Bind
+import br.com.zup.beagle.android.widget.Bind
 
 interface BindingAdapter {
     fun getBindAttributes(): List<Bind<*>>

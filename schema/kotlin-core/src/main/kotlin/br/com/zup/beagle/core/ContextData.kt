@@ -18,5 +18,29 @@ package br.com.zup.beagle.core
 
 data class ContextData(
     val id: String,
-    val value: Any
-)
+    val value: DynamicObject<*>
+) {
+    constructor(id: String, value: Any) : this(
+        id, value.toDynamicObject()
+    )
+}
+
+fun Any?.toDynamicObject() : DynamicObject<*> {
+    return when (this) {
+        is DynamicObject<*> -> this
+        is Boolean -> DynamicObject.Boolean(this)
+        is Int -> DynamicObject.Int(this)
+        is Double -> DynamicObject.Double(this)
+        is String -> DynamicObject.String(this)
+        is List<*> -> {
+            DynamicObject.Array(this.map {
+                it.toDynamicObject()
+            })
+        }
+        is Map<*, *> -> DynamicObject.Dictionary(this.map {
+            it.key as String to it.value.toDynamicObject()
+        }.toMap())
+        is Bind<*> -> DynamicObject.String(this.value.toString())
+        else -> DynamicObject.Empty()
+    }
+}

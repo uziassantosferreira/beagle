@@ -364,7 +364,7 @@ naming:
         excludeClassPattern: '$^'
         ignoreOverridden: true
     InvalidPackageDeclaration:
-        active: false
+        active: true
         rootPackage: ''
     MatchingDeclarationName:
         active: true

@@ -17,10 +17,11 @@
 package br.com.zup.beagle.android.action
 
 import br.com.zup.beagle.android.widget.RootView
+import br.com.zup.beagle.core.DynamicObject
 
 data class UpdateContext(
     val contextId: String,
-    val value: Any,
+    val value: DynamicObject<*>,
     val path: String? = null
 ) : Action {
 

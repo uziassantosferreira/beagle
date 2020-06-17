@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.widget.core
+package br.com.zup.beagle.android.widget
 
-import br.com.zup.beagle.core.BindAttribute
+import br.com.zup.beagle.core.GenericAttribute
 
-sealed class Bind<T> : BindAttribute<T> {
+sealed class Bind<T> : GenericAttribute<T> {
     abstract val type: Class<T>
 
     @Transient

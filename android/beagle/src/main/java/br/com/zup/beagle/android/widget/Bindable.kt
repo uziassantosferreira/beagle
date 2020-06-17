@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.widget.core
+package br.com.zup.beagle.android.widget
 
 import android.view.View
 import br.com.zup.beagle.widget.Widget
 
 interface Bindable {
-    fun onBind(widget: Widget, view: View) }
+    fun onBind(widget: Widget, view: View)
+}

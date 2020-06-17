@@ -16,6 +16,7 @@
 
 package br.com.zup.beagle.android.jsonpath
 
+import br.com.zup.beagle.core.DynamicObject
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject

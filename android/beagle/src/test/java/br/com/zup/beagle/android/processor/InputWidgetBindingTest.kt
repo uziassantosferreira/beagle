@@ -16,27 +16,6 @@
 
 package br.com.zup.beagle.android.processor
 
-import android.view.View
-import br.com.zup.beagle.android.extensions.once
-import br.com.zup.beagle.android.setup.BindingAdapter
-import br.com.zup.beagle.android.testutil.RandomData
-import br.com.zup.beagle.android.widget.RootView
-import br.com.zup.beagle.android.widget.WidgetView
-import br.com.zup.beagle.android.widget.core.Bind
-import br.com.zup.beagle.processor.CustomInputWidget
-import br.com.zup.beagle.processor.VIEW_PROPERTY
-import br.com.zup.beagle.processor.WIDGET_INSTANCE_PROPERTY
-import io.mockk.MockKAnnotations
-import io.mockk.impl.annotations.InjectMockKs
-import io.mockk.impl.annotations.RelaxedMockK
-import io.mockk.mockk
-import io.mockk.unmockkAll
-import io.mockk.verify
-import org.junit.Before
-import org.junit.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
-
 // TODO After refactor annotation, remove comment
 
 /*

@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.android.widget.core
+package br.com.zup.beagle.serialization.jackson
 
-import br.com.zup.beagle.android.annotation.ContextDataValue
+import br.com.zup.beagle.core.GenericAttribute
+import com.fasterxml.jackson.annotation.JsonValue
 
-data class ContextData(
-    val id: String,
-    @property:ContextDataValue
-    val value: Any // Should be a Number, String, Boolean, JSONObject or JSONArray
-)
-
+internal object GenericMixin : GenericAttribute<Any> {
+    @get:JsonValue
+    override val value: Any = this
+}

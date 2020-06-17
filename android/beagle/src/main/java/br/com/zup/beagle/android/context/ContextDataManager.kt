@@ -22,8 +22,9 @@ import br.com.zup.beagle.android.data.serializer.BeagleMoshi
 import br.com.zup.beagle.android.jsonpath.JsonPathFinder
 import br.com.zup.beagle.android.jsonpath.JsonPathReplacer
 import br.com.zup.beagle.android.logger.BeagleMessageLogs
-import br.com.zup.beagle.android.widget.core.Bind
+import br.com.zup.beagle.android.widget.Bind
 import br.com.zup.beagle.core.ContextData
+import br.com.zup.beagle.core.DynamicObject
 import com.squareup.moshi.Moshi
 import org.json.JSONArray
 import org.json.JSONObject
@@ -113,7 +114,7 @@ internal class ContextDataManager(
         }
     }
 
-    private fun setValue(contextBinding: ContextBinding, path: String, value: Any): Boolean {
+    private fun setValue(contextBinding: ContextBinding, path: String, value: DynamicObject<*>): Boolean {
         val context = contextBinding.context
         return if (path == context.id) {
             val newContext = context.copy(value = value)

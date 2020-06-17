@@ -22,7 +22,7 @@ import br.com.zup.beagle.android.context.ScreenContextViewModel
 import br.com.zup.beagle.android.engine.renderer.ActivityRootView
 import br.com.zup.beagle.android.mockdata.CustomWidget
 import br.com.zup.beagle.android.utils.ViewModelProviderFactory
-import br.com.zup.beagle.android.widget.core.Bind
+import br.com.zup.beagle.android.widget.Bind
 import br.com.zup.beagle.core.ContextData
 import io.mockk.Runs
 import io.mockk.every

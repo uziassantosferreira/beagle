@@ -20,7 +20,7 @@ import android.view.View
 import br.com.zup.beagle.android.widget.RootView
 import br.com.zup.beagle.android.widget.WidgetView
 import br.com.zup.beagle.android.setup.BindingAdapter
-import br.com.zup.beagle.android.widget.core.Bind
+import br.com.zup.beagle.android.widget.Bind
 import br.com.zup.beagle.widget.Widget
 import io.mockk.mockk
 

@@ -24,7 +24,7 @@ import br.com.zup.beagle.android.jsonpath.JsonPathReplacer
 import br.com.zup.beagle.android.logger.BeagleMessageLogs
 import br.com.zup.beagle.android.testutil.RandomData
 import br.com.zup.beagle.android.testutil.getPrivateField
-import br.com.zup.beagle.android.widget.core.Bind
+import br.com.zup.beagle.android.widget.Bind
 import br.com.zup.beagle.core.ContextData
 import com.squareup.moshi.Moshi
 import io.mockk.MockKAnnotations

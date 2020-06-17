@@ -18,7 +18,7 @@ package br.com.zup.beagle.core
 
 import java.io.Serializable
 
-sealed class Bind<T> : BindAttribute<T>, Serializable {
+sealed class Bind<T> : GenericAttribute<T>, Serializable {
     data class Expression<T>(override val value: String): Bind<T>()
     data class Value<T: Any>(override val value: T): Bind<T>()
 }

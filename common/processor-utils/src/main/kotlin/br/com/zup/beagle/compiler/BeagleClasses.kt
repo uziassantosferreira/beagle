@@ -80,7 +80,7 @@ val BINDING_WIDGET = BeagleClass(
 )
 
 val BIND_ANDROID = BeagleClass(
-    packageName = "br.com.zup.beagle.android.widget.core",
+    packageName = "br.com.zup.beagle.android.widget",
     className = "Bind"
 )
 

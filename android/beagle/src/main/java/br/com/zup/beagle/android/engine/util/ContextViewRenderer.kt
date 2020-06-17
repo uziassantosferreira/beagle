@@ -21,7 +21,7 @@ import br.com.zup.beagle.android.context.ScreenContextViewModel
 import br.com.zup.beagle.android.setup.BindingAdapter
 import br.com.zup.beagle.android.utils.generateViewModelInstance
 import br.com.zup.beagle.android.widget.RootView
-import br.com.zup.beagle.android.widget.core.Bind
+import br.com.zup.beagle.android.widget.Bind
 import br.com.zup.beagle.core.ServerDrivenComponent
 
 internal class ContextViewRenderer {

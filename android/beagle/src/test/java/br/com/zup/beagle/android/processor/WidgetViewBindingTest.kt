@@ -17,14 +17,12 @@
 
 package br.com.zup.beagle.android.processor
 
-import android.content.Context
 import android.view.View
 import br.com.zup.beagle.android.extensions.once
 import br.com.zup.beagle.android.setup.BindingAdapter
-import br.com.zup.beagle.android.testutil.setPrivateField
 import br.com.zup.beagle.android.widget.RootView
 import br.com.zup.beagle.android.widget.WidgetView
-import br.com.zup.beagle.android.widget.core.Bind
+import br.com.zup.beagle.android.widget.Bind
 import br.com.zup.beagle.processor.FieldOnlyWidget
 import br.com.zup.beagle.processor.FieldOnlyWidgetBinding
 import br.com.zup.beagle.processor.VIEW_PROPERTY
